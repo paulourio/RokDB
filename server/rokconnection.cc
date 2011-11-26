@@ -27,13 +27,13 @@ void RokConnection::Listen() {
 		*socket >> data;
 		if (data.isEmpty())
 			continue;
-		*socket << data;
+		UnicodeString toReturn(data);
+		*socket << toReturn;
 		char buffer[::MAXRECV];
 		memset(buffer, 0, ::MAXRECV);
 		data.extract(0, data.length() +1 , buffer, ::MAXRECV);
 		std::cout << "Received: " << buffer << std::endl;
 		std::cout.flush();
-		break;
 	}
 	debug(2, "Exiting thread.");
 	pthread_exit(0);

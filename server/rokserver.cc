@@ -44,13 +44,11 @@ void RokServer::Stop() {
 
 void RokServer::Execute() {
 	debug(0, "Running....\n");
-
 	try {
 		ServerSocket server(core.get_config().get_port());
 
 		pthread_attr_init(&attr);
 		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-
 		while (active) {
 			socket = new ServerSocket;
 			struct ConnectionInfo *info;
