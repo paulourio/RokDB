@@ -1,0 +1,152 @@
+/*
+ * rokserver.cpp
+ *
+ *  Created on: 24/11/2011
+ */
+#include <cstdlib>
+#include <csignal>
+#include <algorithm>
+#include <pthread.h>
+
+#include <config.h>
+#include <rokserver.h>
+#include <rokdb.h>
+#include <serversocket.h>
+#include <rokconnection.h>
+
+using namespace rokdb;
+
+extern RokDB core;
+
+/* Schedule thread execution */
+void RokServer::Start() {
+	void *ret_join;
+	int ret;
+
+	ret = pthread_create(&server_thread, NULL,
+			(void* (*)(void*)) &RokServer::RunServer, NULL);
+	if (ret != 0) {
+		error("Error: Failed to create the server thread.");
+		exit(EXIT_FAILURE);
+	}
+	ret = pthread_join(server_thread, &ret_join);
+	if (ret != 0) {
+		error("Error: Failed to join server thread.");
+		exit(EXIT_FAILURE);
+	}
+}
+
+/* Called when a signal is received. */
+void RokServer::Stop() {
+	active = false;
+	CloseConnections();
+	//pthread_kill(server_thread, SIGTERM);
+}
+
+void RokServer::Execute() {
+	debug(0, "Running....\n");
+
+	try {
+		ServerSocket server(core.get_config().get_port());
+
+		//pthread_attr_t attr;
+		//pthread_attr_init(&attr);
+		//pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
+		while (active) {
+			ServerSocket *socket = new ServerSocket;
+			struct ConnectionInfo *info;
+			int ret;
+
+			server.Accept(socket);
+			info = new struct ConnectionInfo;
+			info->connection = new RokConnection(socket);
+			info->thread = new pthread_t;
+			ret = pthread_create(info->thread, NULL, //&attr,
+					(void* (*)(void*)) &RokServer::NewConnection,
+					(void *) info);
+			if (ret != 0) {
+				error("Error: Failed to create the connection thread.");
+				exit(EXIT_FAILURE);
+			}
+			//pthread_detach(*info->thread);
+			connections.push_back(info);
+			//pthread_join(*info->thread, NULL);
+			//FreeInfo(info);
+			//connections.pop_back();
+		}
+
+		//pthread_attr_destroy(&attr);
+		CloseConnections();
+	} catch (SocketException& e) {
+		std::stringstream sstm;
+
+		sstm << "Exception: " << e.description() << "\nExiting.\n";
+		error(sstm.str());
+		exit(EXIT_FAILURE);
+	}
+}
+#include <iostream>
+void RokServer::CloseConnections() {
+	while (!connections.empty()) {
+		struct ConnectionInfo *info = connections.front();
+		connections.pop_front();
+		info->connection->RequestStop();
+		// TODO : sleep?
+		std::stringstream sstm;
+
+		sstm << "Stopping thread " << info->thread;
+		debug(2, sstm.str());
+		pthread_cancel(*info->thread);
+		FreeInfo(info);
+	}
+	pthread_cancel(server_thread);
+}
+
+void RokServer::FreeInfo(struct ConnectionInfo *info) {
+	delete info->connection;
+	delete info->thread;
+	delete info;
+}
+
+void RokServer::KillConnection(pthread_t *thread) {
+	void *ret;
+	std::stringstream sstm;
+
+	sstm << "Killing thread " << thread;
+	debug(2, sstm.str());
+	pthread_kill(*thread, SIGINT);
+	pthread_join(*thread, &ret);
+	free(thread);
+}
+
+/**
+ * Method called inside a thread.
+ */
+void *RokServer::RunServer(void *arg) {
+	core.get_server().Execute();
+	return NULL;
+}
+
+void *RokServer::NewConnection(void *arg) {
+	struct ConnectionInfo *info = (struct ConnectionInfo *) arg;
+
+	info->connection->Listen();
+	return NULL;
+}
+
+RokServer::RokServer() :
+	active(true) {
+}
+
+RokServer::~RokServer() {
+	CloseConnections();
+}
+
+void RokServer::set_active(bool value) {
+	active = value;
+}
+
+std::list<struct ConnectionInfo *> RokServer::get_connections() {
+	return connections;
+}

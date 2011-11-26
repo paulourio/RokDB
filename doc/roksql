@@ -1,0 +1,27 @@
+
+Criar:
+CREATE tabela WITH campo1, campo2, campo2;
+
+Inserir:
+IN tabela INSERT campo1="valor"; campo2="valor";
+
+Deletar:
+IN tabela REMOVE campo1="valor";
+
+Buscar:
+IN tabela SELECT campo1="%lor";
+
+
+
+
+CREATE [tabela] WITH [[campo1], ...];
+
+IN [tabela] INSERT [[campo1="valor"], ...];
+
+IN [tabela] SET [[campo1="valor"], ...] WHERE [[campo2="expressão regular"], ...];
+
+IN [tablea] REMOVE [[campo1="valor"], ...];
+
+IN [tabela] SELECT [[campo1="expressão regular"], ...]
+
+COMMIT;

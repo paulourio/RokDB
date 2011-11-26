@@ -1,0 +1,10 @@
+*.o
+*.pyc
+RokDB
+rdbclient
+.settings/*
+.cproject
+.project
+.pydevproject
+.rodb.conf.*
+
