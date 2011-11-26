@@ -40,7 +40,6 @@ void RokServer::Start() {
 void RokServer::Stop() {
 	active = false;
 	CloseConnections();
-	//pthread_kill(server_thread, SIGTERM);
 }
 
 void RokServer::Execute() {
@@ -49,12 +48,11 @@ void RokServer::Execute() {
 	try {
 		ServerSocket server(core.get_config().get_port());
 
-		//pthread_attr_t attr;
-		//pthread_attr_init(&attr);
-		//pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+		pthread_attr_init(&attr);
+		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
 		while (active) {
-			ServerSocket *socket = new ServerSocket;
+			socket = new ServerSocket;
 			struct ConnectionInfo *info;
 			int ret;
 
@@ -62,7 +60,7 @@ void RokServer::Execute() {
 			info = new struct ConnectionInfo;
 			info->connection = new RokConnection(socket);
 			info->thread = new pthread_t;
-			ret = pthread_create(info->thread, NULL, //&attr,
+			ret = pthread_create(info->thread, &attr,
 					(void* (*)(void*)) &RokServer::NewConnection,
 					(void *) info);
 			if (ret != 0) {
@@ -75,9 +73,6 @@ void RokServer::Execute() {
 			//FreeInfo(info);
 			//connections.pop_back();
 		}
-
-		//pthread_attr_destroy(&attr);
-		CloseConnections();
 	} catch (SocketException& e) {
 		std::stringstream sstm;
 
@@ -86,7 +81,7 @@ void RokServer::Execute() {
 		exit(EXIT_FAILURE);
 	}
 }
-#include <iostream>
+
 void RokServer::CloseConnections() {
 	while (!connections.empty()) {
 		struct ConnectionInfo *info = connections.front();
@@ -141,6 +136,8 @@ RokServer::RokServer() :
 
 RokServer::~RokServer() {
 	CloseConnections();
+	pthread_attr_destroy(&attr);
+	delete socket;
 }
 
 void RokServer::set_active(bool value) {

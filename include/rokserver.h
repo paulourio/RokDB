@@ -22,7 +22,9 @@ class RokServer {
 private:
 	bool active ;
 	pthread_t server_thread;
+	pthread_attr_t attr;
 	std::list<struct ConnectionInfo *> connections;
+	ServerSocket *socket;
 
 	void CloseConnections();
 	static void KillConnection(pthread_t *);

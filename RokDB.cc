@@ -11,7 +11,6 @@ extern RokDB core;
 RokDB::RokDB() : config_file("bin/rokdb.conf") {
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
-	//signal(SIGCHLD, SIG_IGN);
 
 	get_config().ReadFromFile(config_file);
 	Lock();
@@ -46,6 +45,7 @@ void RokDB::SignalHandler(int signum) {
 	}
 }
 
+/* Will be called if mutex is succesfully created. */
 void RokDB::start(void) {
 	server.Start();
 }

@@ -20,6 +20,7 @@ private:
 	Config config;
 	RokServer server;
 	AppMutex mutex;
+
 	static void SignalHandler(int);
 	void Lock();
 public:
