@@ -25,15 +25,15 @@ n {
 #ifndef HEADER_H
 #define HEADER_H
 
+class Banco;
 
 #include <list>
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include "erros.h"
-#include "tipos.h"
-#include "coluna.h"
+#include "util.h"
+#include "banco.h"
 
 using namespace std;
 
@@ -42,29 +42,6 @@ using namespace std;
 #define TAMPAGUSO 32765
 
 
-/** armazena booleanos: se tem default, not_null, unique, primary_key e
-	foreign key.
-*/
-
-
-
-
-/** Como o número total de bytes que a chave primária terá é variável, a lista
-	armazena-a como bytes (unsigned char), assim, seu tamanho deverá ser
-	tam_pk vezes maior que o da lista quant.
-*//*
-typedef struct {
-	string nome;
-	int quant;
-	int tam;
-	void *pk_inicial;
-}INFO_PAGINA;
-
-
-typedef struct {
-	string nome_tabela, nome_campo;
-}INFO_FK;
-*/
 
 __attribute__((__packed__))
 struct STRUCT_COLUNA{
@@ -89,17 +66,18 @@ class Header {
 
 
 	public:
+		Banco *banco;
 		cabecalho cab;
 		coluna *cols;
 		void *pags;
+		int qpags;
 
 
 		/** Lê um arquivo de header em uma estrutura de header.
-			@param arq O arquivo de header.
 		*/
-		Header(FILE *a);
+		Header(Banco *b, char *nome);
 
-		Header(cabecalho cab, coluna *cols);
+		Header(Banco *b, cabecalho cab, coluna *cols);
 
 		/** Desaloca a memória alocada em uma header struct.
 		*/
@@ -118,6 +96,14 @@ class Header {
 		/** Quantidade de registros que cabem em uma pagina.
 		*/
 		int regs_por_pag();
+
+
+
+		void ler_dados();
+
+		void insert(void *reg);
+
+		void *make_reg(...);
 };
 
 

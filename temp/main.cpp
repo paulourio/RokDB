@@ -12,22 +12,28 @@
 #endif
 
 
-void testar_maketable();
-void testar_opentable();
+void testar_maketable(Banco *b);
+void testar_opentable(Banco *b);
 
 int main() {
 
 	Banco b;
-	b.criar_banco("Guano");
-	b.abrir_banco("Guano");
+	b.criar_banco("Maoe");
+	b.abrir_banco("Maoe");
 
-	//testar_maketable();
-	testar_opentable();
+	testar_maketable(&b);
+	//testar_opentable(&b);
+
+	b.remover_tabela("Guano");
+
+	b.fechar_banco();
+
+	remover_banco("Maoe");
 	return 0;
 }
 
 
-void testar_maketable() {
+void testar_maketable(Banco *b) {
 
 	coluna c1[2];
 
@@ -48,24 +54,21 @@ void testar_maketable() {
 	cabecalho cab;
 
 	memset(cab.nome, 0, MAXSTR);
-	strcpy(cab.nome, "Tabelalol");
+	strcpy(cab.nome, "Guano");
 
 
-
-	printf("Nome1: %s\n", cab.nome);
 	cab.qcampos = (unsigned int) 2;
 	cab.qpags = (unsigned int) 0;
 
-	printf("Nome2: %s\n", cab.nome);
 
-
-	Header *h = new Header(cab,c1);
+	Header *h = new Header(b, cab, c1);
+	b->adicionar_tabela(*h);
 
 }
 
 
-void testar_opentable() {
-	FILE *f = fopen("Tabelalol.header", "rb");
-	Header *h = new Header(f);
+void testar_opentable(Banco *b) {
+	FILE *f = fopen("Guano.header", "rb");
+	Header *h = new Header(b, "Guano");
 	printf("Tam %d\n", h->cols[1].tamcampo);
 }
