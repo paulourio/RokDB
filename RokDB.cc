@@ -17,6 +17,7 @@ RokDB::RokDB() : config_file("bin/rokdb.conf") {
 	Lock();
 
 	parser.OnInsert((ProtocolEventInsert) &RokAccess::HandleInsert);
+	parser.OnNewDatabase((ProtocolEventDatabase) &RokAccess::HandleNewDatabase);
 }
 
 RokDB::~RokDB() {

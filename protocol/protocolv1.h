@@ -40,10 +40,15 @@ struct CommandUpdate {
 	StringPair new_values; /* <column, value> */
 };
 
+struct CommandDatabase {
+	UnicodeString database_name;
+};
+
 typedef void (*ProtocolEventInsert)(const struct CommandInsert *);
 typedef void (*ProtocolEventDelete)(const struct CommandDelete *);
 typedef void (*ProtocolEventUpdate)(const struct CommandUpdate *);
 typedef void (*ProtocolEventCreate)(const struct CommandCreate *);
+typedef void (*ProtocolEventDatabase)(const struct CommandDatabase *);
 
 class ProtocolV1: public Protocol {
 public:
@@ -53,14 +58,22 @@ public:
 	void OnDelete(ProtocolEventDelete);
 	void OnUpdate(ProtocolEventUpdate);
 	void OnCreate(ProtocolEventCreate);
+	void OnNewDatabase(ProtocolEventDatabase);
+	void OnDestroyDatabase(ProtocolEventDatabase);
 
+	/* Threaded asynchronous calls */
 	static void CommandInsert(RegexMatcher *);
+	static void CommandNewDatabase(RegexMatcher *);
+	static void CommandDestroyDatabase(RegexMatcher *);
+
 
 	/* looool */
 	ProtocolEventInsert insert_callback;
 	ProtocolEventDelete delete_callback;
 	ProtocolEventUpdate update_callback;
 	ProtocolEventCreate create_callback;
+	ProtocolEventDatabase newdatabase_callback;
+	ProtocolEventDatabase destroydatabase_callback;
 };
 
 }

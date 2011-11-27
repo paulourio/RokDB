@@ -37,3 +37,9 @@ void RokAccess::HandleInsert(const struct CommandInsert *info) {
 		std::cout << "Campo " << campo << " com valor " << valor << std::endl;
 	}
 }
+
+void RokAccess::HandleNewDatabase(const struct CommandDatabase *info) {
+	std::cout << "Database Name: ";
+	uprint(info->database_name);
+	std::cout << std::endl;
+}

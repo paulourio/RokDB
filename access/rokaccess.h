@@ -15,6 +15,7 @@ namespace rokdb {
 class RokAccess {
 public:
 	static void HandleInsert(const struct CommandInsert *info);
+	static void HandleNewDatabase(const struct CommandDatabase *info);
 };
 
 }

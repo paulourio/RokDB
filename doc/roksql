@@ -1,27 +1,43 @@
+Criar Banco de Dados
+GENESIS [database];
 
-Criar:
-CREATE tabela WITH campo1, campo2, campo2;
+Apagar Banco de Dados
+DESTROY [database];
 
-Inserir:
-IN tabela INSERT campo1="valor"; campo2="valor";
+Criar Tabela
+AT [database] CREATE [tabela] WITH [[campo1 [tipo]], ...];
 
-Deletar:
-IN tabela REMOVE campo1="valor";
+Deletar Tabela
+AT [database] DROP [tabela];
 
-Buscar:
-IN tabela SELECT campo1="%lor";
+Inserir em uma tabela
+AT [database] IN [tabela] INSERT [[campo1="valor"], ...];
+
+Alterar tabela
+AT [database] IN [tabela] SET [[campo1="valor"], ...] WHERE [[campo2="expressão regular"], ...];
+
+Remover de uma tabela
+AT [database] IN [tablea] REMOVE [[campo1="valor"], ...];
+
+Busca
+AT [database] IN [tabela] SELECT [[campo1="expressão regular"], ...];
 
 
+Retorno da busca:
 
+|============================|
+| Status da operação         |
+|----------------------------|
+| Registros da busca         |
+|============================|
 
-CREATE [tabela] WITH [[campo1], ...];
+Um final de linha termina com '\n'
 
-IN [tabela] INSERT [[campo1="valor"], ...];
+Exemplo para um registro (1, 'Johnny', '234'):
 
-IN [tabela] SET [[campo1="valor"], ...] WHERE [[campo2="expressão regular"], ...];
+1\n
+12\tJohnny\t234\n
 
-IN [tablea] REMOVE [[campo1="valor"], ...];
-
-IN [tabela] SELECT [[campo1="expressão regular"], ...]
-
-COMMIT;
+Queries que não recebem registros de resposta apenas possuem
+um retorno "0" para falha e "1" para sucesso, terminando um
+final de linha '\n';
