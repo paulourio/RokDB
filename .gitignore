@@ -8,4 +8,6 @@ rdbclient
 .pydevproject
 .rodb.conf.*
 rokdb.lock
+*.swo
+*.swp
 
