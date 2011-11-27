@@ -25,6 +25,7 @@ private:
 	UErrorCode status;
 	int port;
 	int debug_level;
+	int timeout;
 
 	void ProcessLine(const char *);
 
@@ -40,6 +41,9 @@ public:
 
 	int get_debug();
 	void set_debug(const int);
+
+	int get_timeout();
+	void set_timeout(const int);
 
 	bool ReadFromFile(const std::string &);
 

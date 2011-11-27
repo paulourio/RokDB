@@ -76,6 +76,7 @@ bool Socket::send(const UnicodeString s) const {
 	int status;
 	char buffer[size];
 
+	memset(buffer, 0, size);
 	s.extract(0, size, buffer, size);
 	status = ::send(socket_pid, buffer, size, MSG_NOSIGNAL);
 	switch (errno) {

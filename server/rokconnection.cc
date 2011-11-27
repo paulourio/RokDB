@@ -7,8 +7,11 @@
 #include <cstring>
 #include <serversocket.h>
 #include <rokconnection.h>
+#include <rokdb.h>
 
 using namespace rokdb;
+
+extern RokDB core;
 
 RokConnection::RokConnection(ServerSocket *psocket) {
 	debug(1, "Connection opened.");

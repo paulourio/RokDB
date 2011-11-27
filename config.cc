@@ -39,6 +39,14 @@ void Config::set_debug(const int new_value) {
 	debug_level = new_value;
 }
 
+int Config::get_timeout() {
+	return timeout;
+}
+
+void Config::set_timeout(const int new_value) {
+	timeout = new_value;
+}
+
 bool Config::ReadFromFile(const std::string &file) {
 	char str[256];
 
@@ -143,7 +151,7 @@ bool Config::CommandTimeOut(const UnicodeString command) {
 		if (ReadInt(matcher->group(1, status), &value)) {
 			std::stringstream message;
 
-			set_debug(value);
+			set_timeout(value);
 			message << "CONFIG: Connection timeout updated to " << value << "s";
 			::debug(3, message.str());
 			result = true;
