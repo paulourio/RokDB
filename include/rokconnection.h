@@ -16,6 +16,7 @@ namespace rokdb {
  */
 class RokConnection {
 private:
+	int idle_time;
 	bool active;
 	ServerSocket *socket;
 public:
@@ -23,6 +24,7 @@ public:
 	~RokConnection();
 	void Listen();
 	void RequestStop();
+	int get_idle_time() const;
 };
 
 }

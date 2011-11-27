@@ -27,8 +27,6 @@ private:
 	ServerSocket *socket;
 
 	void CloseConnections();
-	static void KillConnection(pthread_t *);
-
 	static void *RunServer(void *);
 	static void *NewConnection(void *);
 public:

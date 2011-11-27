@@ -13,7 +13,7 @@ TARGET = RokDB
 all: rokdbclient $(TARGET)
 
 $(TARGET):	$(OBJS)
-	$(CXX) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+	$(CXX) $(LDFLAGS) $(OBJS) $(LIBS) -o $(TARGET)
 	mv $(TARGET) bin/
 
 rokdbclient:

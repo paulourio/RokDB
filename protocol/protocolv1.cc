@@ -9,8 +9,11 @@
 
 using namespace rokdb;
 
-ProtocolV1::ProtocolV1() {
-	const UnicodeString insert_regex("^in\\s+(\\S+)\\s+insert\\s+(.+)\\s*;\\s*$");
+ProtocolV1::ProtocolV1() :
+	insert_callback(NULL), delete_callback(NULL), update_callback(NULL),
+			create_callback(NULL), use_callback(NULL) {
+	const UnicodeString insert_regex(
+			"^\\s*in\\s+(\\S+)\\s+insert\\s+(.+)\\s*;\\s*$");
 
 	RegisterTrigger(insert_regex, &CommandInsert);
 }
@@ -47,4 +50,18 @@ void ProtocolV1::CommandInsert(RegexMatcher *matcher) {
 	}
 	delete fields;
 	delete matcher;
+}
+
+void ProtocolV1::OnInsert(ProtocolEventInsert &callback) {
+	insert_callback = callback;
+}
+void ProtocolV1::OnDelete(ProtocolEventDelete &callback) {
+}
+void ProtocolV1::OnUpdate(ProtocolEventUpdate &callback) {
+}
+void ProtocolV1::OnCreate(ProtocolEventCreate &callback) {
+}
+void ProtocolV1::OnUse(ProtocolEventUse &callback) {
+}
+void ProtocolV1::OnCommit(ProtocolEventCommit &callback) {
 }

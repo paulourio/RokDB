@@ -65,11 +65,7 @@ void RokServer::Execute() {
 				error("Error: Failed to create the connection thread.");
 				exit(EXIT_FAILURE);
 			}
-			//pthread_detach(*info->thread);
 			connections.push_back(info);
-			//pthread_join(*info->thread, NULL);
-			//FreeInfo(info);
-			//connections.pop_back();
 		}
 	} catch (SocketException& e) {
 		std::stringstream sstm;
@@ -85,7 +81,6 @@ void RokServer::CloseConnections() {
 		struct ConnectionInfo *info = connections.front();
 		connections.pop_front();
 		info->connection->RequestStop();
-		// TODO : sleep?
 		std::stringstream sstm;
 
 		sstm << "Stopping thread " << info->thread;
@@ -101,17 +96,6 @@ void RokServer::FreeInfo(struct ConnectionInfo *info) {
 	delete info->connection;
 	delete info->thread;
 	delete info;
-}
-
-void RokServer::KillConnection(pthread_t *thread) {
-	void *ret;
-	std::stringstream sstm;
-
-	sstm << "Killing thread " << thread;
-	debug(2, sstm.str());
-	pthread_kill(*thread, SIGINT);
-	pthread_join(*thread, &ret);
-	free(thread);
 }
 
 /**

@@ -3,7 +3,7 @@
  *
  *  Created on: 26/11/2011
  */
-#include <protocol.h>
+#include "protocol.h
 
 typedef void (* ProtocolTrigger)(RegexMatcher);
 
