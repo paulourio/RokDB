@@ -15,16 +15,17 @@
 namespace rokdb {
 
 typedef void (* ProtocolTrigger)(RegexMatcher *);
-typedef Map<UnicodeString, ProtocolTrigger> TriggerMap;
+typedef std::map<UnicodeString, ProtocolTrigger> TriggerMap;
 
 class Protocol {
 private:
 protected:
 	TriggerMap triggers;
-	void RegisterTrigger(UnicodeString, ProtocolTrigger);
+
+	void RegisterTrigger(const UnicodeString &, ProtocolTrigger);
 public:
 	void ProcessCommand(UnicodeString);
-	RegexMatcher *Match(const UnicodeString expression,
+	static RegexMatcher *Match(const UnicodeString expression,
 			const UnicodeString value);
 };
 

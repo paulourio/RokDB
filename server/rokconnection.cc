@@ -32,14 +32,18 @@ void RokConnection::Listen() {
 		*socket >> data;
 		if (data.isEmpty())
 			break;
-		idle_time = 0; /* Restart idle counter */
-		UnicodeString toReturn(data);
-		*socket << "HTTP/1.0 200 OK\r\nContent-Type: text/HTML\r\nContent-Length: 77\r\n\r\n<html><body><h1>RokDB Server running on Linux, modafoca</h1></body></html>\r\n";// toReturn;
+
+		//UnicodeString toReturn(data);
+		//*socket << "HTTP/1.0 200 OK\r\nContent-Type: text/HTML\r\nContent-Length: 77\r\n\r\n<html><body><h1>RokDB Server running on Linux, modafoca</h1></body></html>\r\n";// toReturn;
 		char buffer[::MAXRECV];
 		memset(buffer, 0, ::MAXRECV);
 		data.extract(0, data.length() +1 , buffer, ::MAXRECV);
 		std::cout << "Received: " << buffer << std::endl;
 		std::cout.flush();
+
+		core.get_parser().ProcessCommand(data);
+
+		*socket << "1\n";
 	}
 	debug(2, "Exiting thread.\n");
 	pthread_exit(0);
@@ -50,6 +54,4 @@ void RokConnection::RequestStop() {
 	delete socket;
 }
 
-int RokConnection::get_idle_time() const {
-	return idle_time;
-}
+

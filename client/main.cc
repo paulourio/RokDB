@@ -29,8 +29,10 @@ void ProcessCommand() {
 		char input[1024];
 		try {
 			std::cout << ">>> ";
-			std::cin >> input;
+			std::cin.getline(input, 1024);
 			message = input;
+			if (message.isEmpty())
+				exit(-1);
 			client_socket << message;
 			client_socket >> reply;
 		} catch (SocketException&) {

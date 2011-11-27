@@ -4,6 +4,10 @@
  *  Created on: 25/11/2011
  */
 #include <iostream>
+#include <unicode/unistr.h>
+#include <unicode/regex.h>
+#include <cstring>
+
 #include <debug.h>
 #include <config.h>
 #include <rokdb.h>
@@ -23,6 +27,16 @@ void debug(const int level, const std::string message) {
 
 void error(const std::string message) {
 	std::cerr << message << std::endl;
+	std::cerr.flush();
+}
+
+void uprint(const UnicodeString &message) {
+	UErrorCode status(U_ZERO_ERROR);
+	char buffer[255];
+
+	memset(buffer, 0, 255);
+	message.extract(0, message.length() +1 , buffer, 255);
+	std::cerr << buffer;
 	std::cerr.flush();
 }
 

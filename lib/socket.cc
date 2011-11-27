@@ -79,17 +79,6 @@ bool Socket::send(const UnicodeString s) const {
 	memset(buffer, 0, size);
 	s.extract(0, size, buffer, size);
 	status = ::send(socket_pid, buffer, size, MSG_NOSIGNAL);
-	switch (errno) {
-	case EBADF:
-		error("Error: send() returned EBADF (Bad file number).");
-		break;
-	case 0:
-		break;
-	default:
-		std::stringstream message;
-		message << "Error: send() returned errno=" << errno;
-		error(message.str());
-	}
 	return CheckSuccess(status);
 }
 

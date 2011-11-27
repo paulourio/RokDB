@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <csignal>
 
+#include <access/rokaccess.h>
 #include "rokdb.h"
 
 using namespace rokdb;
@@ -14,6 +15,8 @@ RokDB::RokDB() : config_file("bin/rokdb.conf") {
 
 	get_config().ReadFromFile(config_file);
 	Lock();
+
+	parser.OnInsert((ProtocolEventInsert) &RokAccess::HandleInsert);
 }
 
 RokDB::~RokDB() {
@@ -31,7 +34,6 @@ void RokDB::Lock() {
 		if (mutex.CreateMutex(lock_file.str()))
 			return;
 	}
-	exit(EXIT_FAILURE);
 }
 
 void RokDB::SignalHandler(int signum) {
@@ -47,7 +49,8 @@ void RokDB::SignalHandler(int signum) {
 
 /* Will be called if mutex is succesfully created. */
 void RokDB::start(void) {
-	server.Start();
+	if (mutex.is_locked())
+		server.Start();
 }
 
 RokServer RokDB::get_server() {
@@ -56,4 +59,8 @@ RokServer RokDB::get_server() {
 
 Config RokDB::get_config() {
 	return config;
+}
+
+ProtocolV1 RokDB::get_parser() {
+	return parser;
 }

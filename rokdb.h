@@ -11,6 +11,7 @@
 #include <rokserver.h>
 #include <config.h>
 #include "appmutex.h"
+#include <protocol/protocolv1.h>
 
 namespace rokdb {
 
@@ -20,6 +21,7 @@ private:
 	Config config;
 	RokServer server;
 	AppMutex mutex;
+	ProtocolV1 parser;
 
 	static void SignalHandler(int);
 	void Lock();
@@ -30,6 +32,7 @@ public:
 
 	RokServer get_server();
 	Config get_config();
+	ProtocolV1 get_parser();
 };
 
 }

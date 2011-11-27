@@ -6,62 +6,70 @@
 
 #include "protocolv1.h"
 #include <unicode/regex.h>
+#include <rokdb.h>
 
 using namespace rokdb;
+
+extern RokDB core;
 
 ProtocolV1::ProtocolV1() :
 	insert_callback(NULL), delete_callback(NULL), update_callback(NULL),
 			create_callback(NULL), use_callback(NULL) {
-	const UnicodeString insert_regex(
-			"^\\s*in\\s+(\\S+)\\s+insert\\s+(.+)\\s*;\\s*$");
+	UnicodeString insert_regex("^\\s*in\\s+(\\S+)\\s+insert\\s+(.+)\\s*;\\s*$");
 
-	RegisterTrigger(insert_regex, &CommandInsert);
+	RegisterTrigger(insert_regex, (ProtocolTrigger) &ProtocolV1::CommandInsert);
 }
 
-void processar_campos(UnicodeString campos) {
+ProtocolV1::~ProtocolV1() {
 
-	RegexMatcher matcher(campos_regex, UREGEX_CASE_INSENSITIVE, status);
-
-	matcher.reset(campos);
-	while (matcher.find()) {
-		UnicodeString grupo = matcher.group(1, status);
-		grupo.extract(0, 255, buffer, 255);
-		cout << "Campo: " << buffer;
-
-		grupo = matcher.group(2, status);
-		grupo.extract(0, 255, buffer, 255);
-		cout << "\tValor: " << buffer << endl;
-	}
 }
 
+#include <iostream>
+#include <cstring>
+#include <debug.h>
 void ProtocolV1::CommandInsert(RegexMatcher *matcher) {
-	const UnicodeString fields_regex("(\\S+)=\"(\\S+)\"[,;]?");
+	const UnicodeString insert_fields_regex("(\\S+)=\"(\\S+)\"[,;]?");
 	struct CommandInsert info;
-	UnicodeString fields;
+	UErrorCode status(U_ZERO_ERROR);
 
-	info.table_name = matcher.group(1, NULL);
-	RegexMatcher *fields = Match(fields, matcher.group(2, NULL));
-	while (matcher.find()) {
-		UnicodeString field, value;
+	if (core.get_parser().insert_callback == NULL)
+		return;
+	info.table_name = matcher->group(1, status);
 
-		field = matcher.group(1, NULL);
-		value = matcher.group(2, NULL);
-		info.columns.insert(make_pair(field, value));
+	UnicodeString param(matcher->group(2, status));
+	RegexMatcher *fields = Match(insert_fields_regex, param);
+	if (fields != NULL) {
+		while (fields->find()) {
+			UnicodeString field = fields->group(1, status);
+			UnicodeString value = fields->group(2, status);
+
+			info.columns.insert(std::make_pair(field, value));
+		}
+		delete fields;
 	}
-	delete fields;
-	delete matcher;
+	core.get_parser().insert_callback(&info);
 }
 
-void ProtocolV1::OnInsert(ProtocolEventInsert &callback) {
+void ProtocolV1::OnInsert(ProtocolEventInsert callback) {
 	insert_callback = callback;
 }
-void ProtocolV1::OnDelete(ProtocolEventDelete &callback) {
+
+void ProtocolV1::OnDelete(ProtocolEventDelete callback) {
+	delete_callback = callback;
 }
-void ProtocolV1::OnUpdate(ProtocolEventUpdate &callback) {
+
+void ProtocolV1::OnUpdate(ProtocolEventUpdate callback) {
+	update_callback = callback;
 }
-void ProtocolV1::OnCreate(ProtocolEventCreate &callback) {
+
+void ProtocolV1::OnCreate(ProtocolEventCreate callback) {
+	create_callback = callback;
 }
-void ProtocolV1::OnUse(ProtocolEventUse &callback) {
+
+void ProtocolV1::OnUse(ProtocolEventUse callback) {
+	use_callback = callback;
 }
-void ProtocolV1::OnCommit(ProtocolEventCommit &callback) {
+
+void ProtocolV1::OnCommit(ProtocolEventCommit callback) {
+	commit_callback = callback;
 }
