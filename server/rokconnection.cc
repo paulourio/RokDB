@@ -28,7 +28,7 @@ void RokConnection::Listen() {
 		if (data.isEmpty())
 			continue;
 		UnicodeString toReturn(data);
-		*socket << toReturn;
+		*socket << "HTTP/1.0 200 OK\r\nContent-Type: text/HTML\r\nContent-Length: 77\r\n\r\n<html><body><h1>RokDB Server running on Linux, modafoca</h1></body></html>\r\n";// toReturn;
 		char buffer[::MAXRECV];
 		memset(buffer, 0, ::MAXRECV);
 		data.extract(0, data.length() +1 , buffer, ::MAXRECV);

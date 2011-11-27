@@ -20,7 +20,7 @@ struct ConnectionInfo {
 
 class RokServer {
 private:
-	bool active ;
+	bool active;
 	pthread_t server_thread;
 	pthread_attr_t attr;
 	std::list<struct ConnectionInfo *> connections;

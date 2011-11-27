@@ -20,15 +20,17 @@ class Config {
 private:
 	const UnicodeString port_regexp;
 	const UnicodeString debug_regexp;
-	UErrorCode status;
+	const UnicodeString timeout_regexp;
 
+	UErrorCode status;
 	int port;
 	int debug_level;
 
-	void ProcessLine(const std::string);
+	void ProcessLine(const char *);
 
 	bool CommandPort(const UnicodeString);
 	bool CommandDebug(const UnicodeString);
+	bool CommandTimeOut(const UnicodeString);
 
 	RegexMatcher *Match(const UnicodeString, const UnicodeString);
 	bool ReadInt(const UnicodeString, int *);

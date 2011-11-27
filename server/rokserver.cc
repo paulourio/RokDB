@@ -93,7 +93,8 @@ void RokServer::CloseConnections() {
 		pthread_cancel(*info->thread);
 		FreeInfo(info);
 	}
-	pthread_cancel(server_thread);
+	if (!active) // TODO : Verify if this is really true
+		pthread_cancel(server_thread);
 }
 
 void RokServer::FreeInfo(struct ConnectionInfo *info) {
@@ -129,7 +130,8 @@ void *RokServer::NewConnection(void *arg) {
 }
 
 RokServer::RokServer() :
-	active(true) {
+	active(true),
+	server_thread(-1) {
 }
 
 RokServer::~RokServer() {

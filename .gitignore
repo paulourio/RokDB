@@ -7,4 +7,5 @@ rdbclient
 .project
 .pydevproject
 .rodb.conf.*
+rokdb.lock
 
