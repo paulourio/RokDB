@@ -26,6 +26,7 @@ public:
 	RecordList records;
 	~Table();
 	Column *NewColumn();
+	int GetColumnIndex(const UnicodeString &);
 };
 
 }

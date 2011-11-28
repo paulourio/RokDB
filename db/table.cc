@@ -32,3 +32,13 @@ Column *Table::NewColumn() {
 		memset(col, 0, sizeof(Column));
 	return col;
 }
+
+int Table::GetColumnIndex(const UnicodeString &column_name) {
+	ColumnList::iterator it;
+	int pos = 0;
+
+	for (it = columns.begin(); it != columns.end(); it++, pos++)
+		if ((*it)->name.compare(column_name) == 0)
+			return pos;
+	return -1;
+}
