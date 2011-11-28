@@ -17,10 +17,14 @@ class StorageWriter: private Storage {
 private:
 	bool WriteHeader(char *);
 	bool WriteData(char *);
+	bool RemoveHeader(char *);
+	bool RemoveData(char *);
+	void ShowErrno();
 public:
 	StorageWriter(UnicodeString &);
-	bool LoadTable(const Table &);
+	bool LoadTable(const Table &); /* Load table data from memory */
 	bool Write();
+	bool RemoveTable(const UnicodeString &); /* Delete table's files from fs */
 };
 
 }

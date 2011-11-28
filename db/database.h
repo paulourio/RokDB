@@ -25,9 +25,11 @@ public:
 	bool Create(); /* Create directory structure */
 	bool Destroy(); /* Remove directory structure */
 	bool Exists(); /* Is the database created? */
-	Table *OpenTable(const UnicodeString &);
-	Table *CreateTable(const UnicodeString &);
+
+	Table *ReadTable(const UnicodeString &); /* Read from storage */
+	Table *CreateTable(const UnicodeString &); /* Create in storage */
 	bool WriteTable(Table &); /* Write a table on storage */
+	bool DropTable(const UnicodeString &); /* Erase from storage */
 };
 
 }

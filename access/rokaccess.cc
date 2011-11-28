@@ -79,3 +79,12 @@ void RokAccess::HandleCreateTable(const struct CommandCreate *info) {
 		delete table;
 	}
 }
+
+void RokAccess::HandleDropTable(const struct CommandDrop *info) {
+	core.AcquireLock();
+	core.lastResult = false;
+	Database db(info->database);
+	if (!db.Exists())
+		return;
+	core.lastResult = db.DropTable(info->table_name);
+}

@@ -42,7 +42,7 @@ bool Database::Exists() {
 }
 
 #include <iostream>
-Table *Database::OpenTable(const UnicodeString &name) {
+Table *Database::ReadTable(const UnicodeString &name) {
 	char *table_name = cstr(name);
 	char path[255];
 
@@ -81,4 +81,10 @@ bool Database::WriteTable(Table &table) {
 
 	writer.LoadTable(table);
 	return writer.Write();
+}
+
+bool Database::DropTable(const UnicodeString &name) {
+	StorageWriter writer(database_name);
+
+	return writer.RemoveTable(name);
 }

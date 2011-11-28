@@ -21,6 +21,11 @@ struct CommandCreate {
 	StringPair columns; /* <column name, type> */
 };
 
+struct CommandDrop {
+	UnicodeString database;
+	UnicodeString table_name;
+};
+
 struct CommandInsert {
 	UnicodeString database;
 	UnicodeString table_name;
@@ -48,6 +53,7 @@ typedef void (*ProtocolEventInsert)(const struct CommandInsert *);
 typedef void (*ProtocolEventDelete)(const struct CommandDelete *);
 typedef void (*ProtocolEventUpdate)(const struct CommandUpdate *);
 typedef void (*ProtocolEventCreate)(const struct CommandCreate *);
+typedef void (*ProtocolEventDrop)(const struct CommandDrop *);
 typedef void (*ProtocolEventDatabase)(const struct CommandDatabase *);
 
 class ProtocolV1: public Protocol {
@@ -58,6 +64,7 @@ public:
 	void OnDelete(ProtocolEventDelete);
 	void OnUpdate(ProtocolEventUpdate);
 	void OnCreate(ProtocolEventCreate);
+	void OnDrop(ProtocolEventDrop);
 	void OnNewDatabase(ProtocolEventDatabase);
 	void OnDestroyDatabase(ProtocolEventDatabase);
 
@@ -66,12 +73,14 @@ public:
 	static bool CommandNewDatabase(RegexMatcher *);
 	static bool CommandDestroyDatabase(RegexMatcher *);
 	static bool CommandCreateTable(RegexMatcher *);
+	static bool CommandDropTable(RegexMatcher *);
 
 	/* looool */
 	ProtocolEventInsert insert_callback;
 	ProtocolEventDelete delete_callback;
 	ProtocolEventUpdate update_callback;
 	ProtocolEventCreate create_callback;
+	ProtocolEventDrop drop_callback;
 	ProtocolEventDatabase newdatabase_callback;
 	ProtocolEventDatabase destroydatabase_callback;
 

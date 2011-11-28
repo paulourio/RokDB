@@ -32,7 +32,10 @@ void ProcessCommand() {
 			std::cin.getline(input, 1024);
 			message = input;
 			if (message.isEmpty())
-				exit(-1);
+				if (std::cin.eof())
+					exit(-1);
+				else
+					return;
 			client_socket << message;
 			client_socket >> reply;
 		} catch (SocketException&) {

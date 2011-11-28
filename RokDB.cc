@@ -29,9 +29,9 @@ RokDB::RokDB() :
 
 	parser.OnInsert((ProtocolEventInsert) &RokAccess::HandleInsert);
 	parser.OnNewDatabase((ProtocolEventDatabase) &RokAccess::HandleNewDatabase);
-	parser.OnDestroyDatabase(
-			(ProtocolEventDatabase) &RokAccess::HandleDestroyDatabase);
+	parser.OnDestroyDatabase((ProtocolEventDatabase) &RokAccess::HandleDestroyDatabase);
 	parser.OnCreate((ProtocolEventCreate) &RokAccess::HandleCreateTable);
+	parser.OnDrop((ProtocolEventDrop) &RokAccess::HandleDropTable);
 }
 
 RokDB::~RokDB() {

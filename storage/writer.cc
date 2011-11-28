@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <cerrno>
 
 #include <debug.h>
 #include <utils.h>
@@ -65,6 +66,7 @@ bool StorageWriter::WriteHeader(char *table) {
 	file = fopen(filename, "wb");
 	if (file == NULL) {
 		error("Can't open table to write.");
+		ShowErrno();
 		return false;
 	}
 	/* Write start of header */
@@ -90,23 +92,69 @@ bool StorageWriter::WriteHeader(char *table) {
 }
 
 bool StorageWriter::WriteData(char *table) {
-/*	char filename[MAX_STRING];
 
-
-	strcpy(filename, table);
-	strcat(filename, ".data");
-	file = fopen(filename, "w");
-	if (file == NULL) {
-		error("Can't open table to write.");
-		return false;
-	}
-	int written = fwrite(&header, sizeof(header), 1, file);
-	if (written != 1) {
-		error("Can't write table");
-		fclose(file);
-		return false;
-	}
-	fflush(file);
-	fclose(file);*/
 	return true;
+}
+
+bool StorageWriter::RemoveTable(const UnicodeString &table) {
+	char filename[MAX_STRING];
+	char *ctable = cstr(table);
+
+	BuildTablePath(filename, MAX_STRING, this->directory, ctable);
+	free(ctable);
+	return RemoveHeader(filename) && RemoveData(filename);
+}
+
+bool StorageWriter::RemoveHeader(char *table) {
+	char filename[MAX_STRING];
+	int code;
+
+	memset(filename, 0, MAX_STRING);
+	strcpy(filename, table);
+	strcat(filename, HEADER_EXTENSION);
+	if (!FileExists(filename))
+		return false;
+	code = std::remove(filename);
+	if (code == -1)
+		ShowErrno();
+	return code == 0;
+}
+
+bool StorageWriter::RemoveData(char *table) {
+	char filename[MAX_STRING];
+	int code;
+
+	memset(filename, 0, MAX_STRING);
+	strcpy(filename, table);
+	strcat(filename, DATA_EXTENSION);
+	/* .data is not a required file for a table (ie empty).
+	 * The operation should be successful with this file doesn't exists. */
+	if (!FileExists(filename))
+		return true;
+	code = std::remove(filename);
+	if (code == -1)
+		ShowErrno();
+	return code == 0;
+}
+
+void StorageWriter::ShowErrno() {
+	extern int errno;
+
+	switch (errno) {
+	case EACCES:
+		error("StorageWriter: Permission denied for file handling.");
+		break;
+	case EIO:
+		error("StorageWriter: I/O error.");
+		break;
+	case ENOMEM:
+		error("StorageWriter: No memory in kernel for operation.");
+		break;
+	case EROFS:
+		error("StorageWriter: Database in read-only filesystem.");
+		break;
+	case EINVAL:
+		error("StorageWriter: Invalid permissions.");
+		break;
+	}
 }

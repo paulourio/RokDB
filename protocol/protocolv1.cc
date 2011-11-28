@@ -15,12 +15,12 @@ extern RokDB core;
 
 ProtocolV1::ProtocolV1() :
 	insert_callback(NULL), delete_callback(NULL), update_callback(NULL),
-			create_callback(NULL), newdatabase_callback(NULL),
-			destroydatabase_callback(NULL) {
+			create_callback(NULL), drop_callback(NULL),
+			newdatabase_callback(NULL), destroydatabase_callback(NULL) {
 	UnicodeString newdatabase_regex("^ *GENESIS +(\\S+) *; *");
 	UnicodeString destroydatabase_regex("^ *DESTROY +(\\S+) *; *");
 	UnicodeString createtable_regex("^ *AT +(\\S+) +CREATE +(\\S+) +WITH +(.+) *; *$");
-	UnicodeString droptable_regex("^ *AT +( +) +DROP +( +) *; *$");
+	UnicodeString droptable_regex("^ *AT +(\\S+) +DROP +(\\S+) *; *$");
 	UnicodeString insert_regex("^ *AT +(\\S+) +IN +(\\S+) +INSERT +(.+) *; *$");
 	UnicodeString update_regex("^ *AT +(\\S+) +IN +(\\S+) +SET +(.+) +WHERE +(.+) *; *$");
 	UnicodeString remove_regex("^ *AT +(\\S+) +IN +(\\S+) +REMOVE +(.+) *; *$");
@@ -30,6 +30,7 @@ ProtocolV1::ProtocolV1() :
 	RegisterTrigger(newdatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandNewDatabase);
 	RegisterTrigger(destroydatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandDestroyDatabase);
 	RegisterTrigger(createtable_regex, (ProtocolTrigger) &ProtocolV1::CommandCreateTable);
+	RegisterTrigger(droptable_regex, (ProtocolTrigger) &ProtocolV1::CommandDropTable);
 }
 
 bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
@@ -109,6 +110,19 @@ bool ProtocolV1::CommandCreateTable(RegexMatcher *matcher) {
 	return true;
 }
 
+bool ProtocolV1::CommandDropTable(RegexMatcher *matcher) {
+	UErrorCode status(U_ZERO_ERROR);
+	struct CommandDrop info;
+
+	if (core.get_parser().drop_callback == NULL)
+		return false;
+	info.database = ucopy(matcher->group(1, status));
+	info.table_name = ucopy(matcher->group(2, status));
+	debug(3, "Droping table");
+	core.get_parser().drop_callback(&info);
+	return true;
+}
+
 void ProtocolV1::OnInsert(ProtocolEventInsert callback) {
 	insert_callback = callback;
 }
@@ -123,6 +137,10 @@ void ProtocolV1::OnUpdate(ProtocolEventUpdate callback) {
 
 void ProtocolV1::OnCreate(ProtocolEventCreate callback) {
 	create_callback = callback;
+}
+
+void ProtocolV1::OnDrop(ProtocolEventDrop callback) {
+	drop_callback = callback;
 }
 
 void ProtocolV1::OnNewDatabase(ProtocolEventDatabase callback) {
