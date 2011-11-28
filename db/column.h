@@ -17,7 +17,7 @@ struct Column {
 };
 
 typedef struct Column Column;
-typedef std::list<Column> ColumnList;
+typedef std::list<Column *> ColumnList;
 
 }
 

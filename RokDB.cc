@@ -12,8 +12,10 @@ using namespace rokdb;
 extern RokDB core;
 
 /* FIXME */
+#include <iostream>
 #include <db/table.h>
 #include <storage/writer.h>
+#include <storage/reader.h>
 
 RokDB::RokDB() :
 	config_file("rokdb.conf") {
@@ -21,6 +23,18 @@ RokDB::RokDB() :
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
 
 	get_config().ReadFromFile(config_file);
+
+	Table pessoa;
+	pessoa.name = UNICODE_STRING_SIMPLE("Pessoa");
+	UnicodeString db = UNICODE_STRING_SIMPLE("muchacho");
+
+	StorageReader reader(db);
+	reader.Read(pessoa);
+
+	std::cout << "Nome tabela: ";
+	uprint(pessoa.name);
+	std::cout << "\nColunas: " << pessoa.columns.size();
+	std::cout << "\n";
 
 	/*Table pessoa;
 	pessoa.name = UNICODE_STRING_SIMPLE("Pessoa");

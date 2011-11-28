@@ -16,6 +16,7 @@ Storage::Storage(UnicodeString &database) : file(NULL) {
 	memset(directory, 0, MAX_NAMESTR);
 	database.extract(0, database.length(), directory, MAX_NAMESTR);
 }
+
 Storage::~Storage() {
 	FreeColumns();
 }

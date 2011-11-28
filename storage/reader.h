@@ -19,8 +19,8 @@ namespace rokdb {
 
 class StorageReader: private Storage {
 private:
-	bool ReadHeader(char *);
-	bool ReadData(char *);
+	bool ReadHeader(char *, Table &);
+	bool ReadData(char *, Table &);
 public:
 	StorageReader(UnicodeString &);
 	bool Read(Table &);

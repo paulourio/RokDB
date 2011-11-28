@@ -32,11 +32,12 @@ bool StorageWriter::LoadTable(const Table &table) {
 			error("No memory to load table data.");
 			return false;
 		}
+		Column *col = *it;
 		memset(column, 0, sizeof(union StorageTableColumn));
-		it->name.extract(0, it->name.length(), column->name, MAX_NAMESTR);
-		column->not_null = it->not_null? 1: 0;
-		column->unique = it->unique? 1: 0;
-		column->size = it->size;
+		col->name.extract(0, col->name.length(), column->name, MAX_NAMESTR);
+		column->not_null = col->not_null? 1: 0;
+		column->unique = col->unique? 1: 0;
+		column->size = col->size;
 		column->type = 0;
 		this->columns.push_back(column);
 	}

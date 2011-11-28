@@ -17,10 +17,14 @@ typedef std::list<UnicodeString> Record;
 typedef std::list<Record> RecordList;
 
 class Table {
+private:
+	void FreeColumns();
+	void FreeRecords();
 public:
 	UnicodeString name;
 	ColumnList columns;
 	RecordList records;
+	~Table();
 };
 
 }
