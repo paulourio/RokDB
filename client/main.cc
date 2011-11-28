@@ -44,11 +44,11 @@ void ProcessCommand() {
 
 			client_socket >> reply_code;
 			reply_code.extract(0, 1024, buffer, 1024);
-			std::cout << buffer<< "\n";
+			std::cout << buffer;
 
 			client_socket >> rows;
 			rows.extract(0, 1024, buffer, 1024);
-			std::cout << buffer<< "\n";
+			std::cout << buffer;
 
 			char row[20];
 			int row_count;

@@ -1,8 +1,11 @@
 DESTROY muchacho;
 GENESIS muchacho;
-AT muchacho CREATE pessoas WITH nome CHAR, idade INT;
-AT muchacho IN pessoas INSERT nome="Johnny", idade="15";
-AT muchacho IN pessoas INSERT nome="Marcelo", idade="12";
-
+AT muchacho CREATE pessoas WITH nome CHAR, idade INT, peso INT;
+AT muchacho IN pessoas INSERT nome="Johnny", idade="15", peso="34";
+AT muchacho IN pessoas INSERT nome="Marcelo", idade="12", peso="55";
+AT muchacho IN pessoas INSERT nome="Paulo", idade="17", peso="14";
+AT muchacho IN pessoas INSERT nome="André", idade="25", peso="14";
+AT muchacho IN pessoas INSERT nome="Maurício", idade="12", peso="34";
+AT muchacho IN pessoas INSERT nome="Thiago", idade="17", peso="54";
 AT muchacho IN pessoas SELECT ALL;
 

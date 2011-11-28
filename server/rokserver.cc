@@ -124,6 +124,10 @@ RokServer::~RokServer() {
 	delete socket;
 }
 
+int RokServer::OpenConnections() {
+	return connections.size();
+}
+
 void RokServer::set_active(bool value) {
 	active = value;
 }

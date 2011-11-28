@@ -42,6 +42,8 @@ public:
 	 /* Out buffer. First thread that find this buffer not empty will send
 	  * to client. */
 	UnicodeString responseBuffer;
+	bool shouldClose; /* Should close connection after response. */
+	bool rawData; /* Set false and it will not send last result. */
 };
 
 }

@@ -87,6 +87,7 @@ public:
 	static bool CommandCreateTable(RegexMatcher *);
 	static bool CommandDropTable(RegexMatcher *);
 	static bool CommandSelect(RegexMatcher *);
+	static bool CommandHTTP(RegexMatcher *);
 
 	/* looool */
 	ProtocolEventInsert insert_callback;

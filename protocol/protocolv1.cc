@@ -4,6 +4,8 @@
  *  Created on: 26/11/2011
  */
 #include <debug.h>
+#include <sstream>
+#include <string>
 #include "protocolv1.h"
 #include <unicode/regex.h>
 #include <rokdb.h>
@@ -27,6 +29,7 @@ ProtocolV1::ProtocolV1() :
 	UnicodeString update_regex("^ *AT +(\\S+) +IN +(\\S+) +SET +(.+) +WHERE +(.+) *; *$");
 	UnicodeString remove_regex("^ *AT +(\\S+) +IN +(\\S+) +REMOVE +(.+) *; *$");
 	UnicodeString select_regex("^ *AT +(\\S+) +IN +(\\S+) +SELECT +(.+)|(ALL) *; *$");
+	UnicodeString http_regex("GET \\S+ HTTP");
 
 	RegisterTrigger(insert_regex, (ProtocolTrigger) &ProtocolV1::CommandInsert);
 	RegisterTrigger(newdatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandNewDatabase);
@@ -34,6 +37,7 @@ ProtocolV1::ProtocolV1() :
 	RegisterTrigger(createtable_regex, (ProtocolTrigger) &ProtocolV1::CommandCreateTable);
 	RegisterTrigger(droptable_regex, (ProtocolTrigger) &ProtocolV1::CommandDropTable);
 	RegisterTrigger(select_regex, (ProtocolTrigger) &ProtocolV1::CommandSelect);
+	RegisterTrigger(http_regex, (ProtocolTrigger) &ProtocolV1::CommandHTTP);
 }
 
 bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
@@ -146,6 +150,31 @@ bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
 	}
 	debug(3, "Select command");
 	core.get_parser().select_callback(&info);
+	return true;
+}
+
+bool ProtocolV1::CommandHTTP(RegexMatcher *matcher) {
+	core.AcquireLock();
+	core.shouldClose = true;
+	core.rawData = true;
+
+	std::stringstream header;
+	std::stringstream response;
+
+	response << "<html><body>";
+	response << "<h1>RokDB Server running on Linux, modafoca</h1><br/>";
+	response << "<br/>Currently active connections: ";
+	response << core.get_server().OpenConnections();
+	response << "</body></html>\r\n";
+
+	std::string sresp = response.str();
+	int length = sresp.length();
+
+	header << "HTTP/1.0 200 OK\r\nContent-Type: text/HTML\r\n";
+	header << "Content-Length: " << length << "\r\n\r\n";
+
+	core.responseBuffer = header.str().c_str();
+	core.responseBuffer += response.str().c_str();
 	return true;
 }
 

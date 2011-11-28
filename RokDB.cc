@@ -14,7 +14,9 @@ extern RokDB core;
 RokDB::RokDB() :
 	config_file("rokdb.conf"),
 	lastResult(false),
-	responseBuffer("0\n") {
+	responseBuffer("0\n"),
+	shouldClose(false),
+	rawData(false) {
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
 

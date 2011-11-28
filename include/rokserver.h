@@ -36,6 +36,7 @@ public:
 	RokServer();
 	~RokServer();
 	void set_active(bool);
+	int OpenConnections();
 	std::list<struct ConnectionInfo *> get_connections();
 	void FreeInfo(struct ConnectionInfo *info);
 };
