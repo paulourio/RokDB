@@ -14,7 +14,7 @@ extern RokDB core;
 RokDB::RokDB() :
 	config_file("rokdb.conf"),
 	lastResult(false),
-	responseBuffer("") {
+	responseBuffer("0\n") {
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
 
@@ -28,6 +28,7 @@ RokDB::RokDB() :
 	parser.OnDestroyDatabase((ProtocolEventDatabase) &RokAccess::HandleDestroyDatabase);
 	parser.OnCreate((ProtocolEventCreate) &RokAccess::HandleCreateTable);
 	parser.OnDrop((ProtocolEventDrop) &RokAccess::HandleDropTable);
+	parser.OnSelect((ProtocolEventSelect) &RokAccess::HandleSelect);
 }
 
 RokDB::~RokDB() {

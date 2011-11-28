@@ -17,7 +17,8 @@ extern RokDB core;
 ProtocolV1::ProtocolV1() :
 	insert_callback(NULL), delete_callback(NULL), update_callback(NULL),
 			create_callback(NULL), drop_callback(NULL),
-			newdatabase_callback(NULL), destroydatabase_callback(NULL) {
+			newdatabase_callback(NULL), destroydatabase_callback(NULL),
+			select_callback(NULL) {
 	UnicodeString newdatabase_regex("^ *GENESIS +(\\S+) *; *");
 	UnicodeString destroydatabase_regex("^ *DESTROY +(\\S+) *; *");
 	UnicodeString createtable_regex("^ *AT +(\\S+) +CREATE +(\\S+) +WITH +(.+) *; *$");
@@ -25,13 +26,14 @@ ProtocolV1::ProtocolV1() :
 	UnicodeString insert_regex("^ *AT +(\\S+) +IN +(\\S+) +INSERT +(.+) *; *$");
 	UnicodeString update_regex("^ *AT +(\\S+) +IN +(\\S+) +SET +(.+) +WHERE +(.+) *; *$");
 	UnicodeString remove_regex("^ *AT +(\\S+) +IN +(\\S+) +REMOVE +(.+) *; *$");
-	UnicodeString select_regex("^ *AT +(\\S+) +IN +(\\S+) +SELECT +(.+) *; *$");
+	UnicodeString select_regex("^ *AT +(\\S+) +IN +(\\S+) +SELECT +(.+)|(ALL) *; *$");
 
 	RegisterTrigger(insert_regex, (ProtocolTrigger) &ProtocolV1::CommandInsert);
 	RegisterTrigger(newdatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandNewDatabase);
 	RegisterTrigger(destroydatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandDestroyDatabase);
 	RegisterTrigger(createtable_regex, (ProtocolTrigger) &ProtocolV1::CommandCreateTable);
 	RegisterTrigger(droptable_regex, (ProtocolTrigger) &ProtocolV1::CommandDropTable);
+	RegisterTrigger(select_regex, (ProtocolTrigger) &ProtocolV1::CommandSelect);
 }
 
 bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
@@ -119,6 +121,34 @@ bool ProtocolV1::CommandDropTable(RegexMatcher *matcher) {
 	return true;
 }
 
+bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
+	const UnicodeString select_fields_regex("(\\S+)=\"(\\S+)\"[,;]? ?");
+	UErrorCode status(U_ZERO_ERROR);
+	struct CommandSelect info;
+
+	if (core.get_parser().select_callback == NULL)
+		return false;
+	info.database = ucopy(matcher->group(1, status));
+	info.table_name = ucopy(matcher->group(2, status));
+	info.all = matcher->group(4, status).isEmpty();
+
+	UnicodeString param = ucopy(matcher->group(3, status));
+	if (!param.isEmpty()) {
+		RegexMatcher *fields = Match(select_fields_regex, param);
+		if (fields != NULL) {
+			while (fields->find()) {
+				UnicodeString column = ucopy(fields->group(1, status));
+				UnicodeString value = ucopy(fields->group(2, status));
+				info.conditions.push_back(std::make_pair(column, value));
+			}
+			delete fields;
+		}
+	}
+	debug(3, "Select command");
+	core.get_parser().select_callback(&info);
+	return true;
+}
+
 void ProtocolV1::OnInsert(ProtocolEventInsert callback) {
 	insert_callback = callback;
 }
@@ -145,6 +175,10 @@ void ProtocolV1::OnNewDatabase(ProtocolEventDatabase callback) {
 
 void ProtocolV1::OnDestroyDatabase(ProtocolEventDatabase callback) {
 	destroydatabase_callback = callback;
+}
+
+void ProtocolV1::OnSelect(ProtocolEventSelect callback) {
+	select_callback = callback;
 }
 
 int ProtocolV1::IdentifyColumnType(const UnicodeString &value) {

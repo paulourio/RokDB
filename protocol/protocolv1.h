@@ -41,6 +41,13 @@ struct CommandDelete {
 	StringPairList conditions; /* <column, value> */
 };
 
+struct CommandSelect {
+	UnicodeString database;
+	UnicodeString table_name;
+	StringPairList conditions; /* <column, value> */
+	bool all;
+};
+
 struct CommandUpdate {
 	UnicodeString database;
 	UnicodeString table_name;
@@ -58,6 +65,7 @@ typedef void (*ProtocolEventUpdate)(const struct CommandUpdate *);
 typedef void (*ProtocolEventCreate)(const struct CommandCreate *);
 typedef void (*ProtocolEventDrop)(const struct CommandDrop *);
 typedef void (*ProtocolEventDatabase)(const struct CommandDatabase *);
+typedef void (*ProtocolEventSelect)(const struct CommandSelect *);
 
 class ProtocolV1: public Protocol {
 public:
@@ -70,6 +78,7 @@ public:
 	void OnDrop(ProtocolEventDrop);
 	void OnNewDatabase(ProtocolEventDatabase);
 	void OnDestroyDatabase(ProtocolEventDatabase);
+	void OnSelect(ProtocolEventSelect);
 
 	/* Threaded asynchronous calls */
 	static bool CommandInsert(RegexMatcher *);
@@ -77,6 +86,7 @@ public:
 	static bool CommandDestroyDatabase(RegexMatcher *);
 	static bool CommandCreateTable(RegexMatcher *);
 	static bool CommandDropTable(RegexMatcher *);
+	static bool CommandSelect(RegexMatcher *);
 
 	/* looool */
 	ProtocolEventInsert insert_callback;
@@ -86,6 +96,7 @@ public:
 	ProtocolEventDrop drop_callback;
 	ProtocolEventDatabase newdatabase_callback;
 	ProtocolEventDatabase destroydatabase_callback;
+	ProtocolEventSelect select_callback;
 
 	/* const */
 	static int IdentifyColumnType(const UnicodeString &);

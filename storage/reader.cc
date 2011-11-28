@@ -102,7 +102,7 @@ bool StorageReader::ReadData(char *path, Table &table) {
 	char filename[MAX_STRING];
 	int read;
 
-	table.records.clear();
+
 	memset(filename, 0, MAX_STRING);
 	strcpy(filename, path);
 	strcat(filename, DATA_EXTENSION);
@@ -116,12 +116,14 @@ bool StorageReader::ReadData(char *path, Table &table) {
 		return false;
 	}
 	/* Read records */
+	records.clear();
+	table.records.clear();
 	UnicodeString value;
 	char buffer[MAX_STRING];
 	while (!feof(file)) {
 		ColumnValues *vals = new ColumnValues();
 		int i = columns.size();
-		while (i--) {
+		while (i-- > 0) {
 			/* Read column value */
 			memset(buffer, 0, MAX_STRING);
 			read = fread(buffer, sizeof(buffer), 1, file);
@@ -135,7 +137,11 @@ bool StorageReader::ReadData(char *path, Table &table) {
 			value = buffer;
 			vals->push_back(value);
 		}
-		table.records.push_back(vals);
+		if (vals->size() > 0) {
+			table.records.push_back(vals);
+		} else {
+			delete vals;
+		}
 	}
 	fclose(file);
 	return true;

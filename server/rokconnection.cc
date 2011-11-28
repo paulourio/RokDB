@@ -50,8 +50,8 @@ void RokConnection::Listen() {
 				*socket << "0\n";
 			if (!core.responseBuffer.isEmpty()) {
 				*socket << core.responseBuffer;
-				core.responseBuffer = UNICODE_STRING_SIMPLE("");
 			}
+			core.responseBuffer = UNICODE_STRING_SIMPLE("0\n");
 			core.FreeLock();
 		} else {
 			*socket << "ERRO\n";

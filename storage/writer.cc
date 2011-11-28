@@ -45,6 +45,7 @@ bool StorageWriter::LoadTable(const Table &table) {
 		this->columns.push_back(column);
 	}
 	/* Records */
+	records.clear();
 	records.assign(table.records.begin(), table.records.end());
 	return true;
 }

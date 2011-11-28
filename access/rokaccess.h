@@ -19,6 +19,7 @@ public:
 	static void HandleDestroyDatabase(const struct CommandDatabase *);
 	static void HandleCreateTable(const struct CommandCreate *);
 	static void HandleDropTable(const struct CommandDrop *);
+	static void HandleSelect(const struct CommandSelect *);
 };
 
 }

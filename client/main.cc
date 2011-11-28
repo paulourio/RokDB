@@ -13,6 +13,8 @@
  */
 #include <iostream>
 #include <sstream>
+#include <cstdio>
+#include <cstring>
 #include <cstdlib>
 #include "clientsocket.h"
 
@@ -24,7 +26,7 @@ void ProcessCommand() {
 	char buffer[1024];
 
 	try {
-		UnicodeString reply;
+		UnicodeString reply_code, rows;
 		UnicodeString message;
 		char input[1024];
 		try {
@@ -39,12 +41,29 @@ void ProcessCommand() {
 				}
 			}
 			client_socket << message;
-			client_socket >> reply;
+
+			client_socket >> reply_code;
+			reply_code.extract(0, 1024, buffer, 1024);
+			std::cout << buffer<< "\n";
+
+			client_socket >> rows;
+			rows.extract(0, 1024, buffer, 1024);
+			std::cout << buffer<< "\n";
+
+			char row[20];
+			int row_count;
+
+			memset(row, 0, sizeof(row));
+			rows.extract(0, rows.length(), row, 20);
+			sscanf(row, "%d", &row_count);
+			while (row_count-- > 0) {
+				client_socket >> rows;
+				rows.extract(0, 1024, buffer, 1024);
+				std::cout << buffer<< "\n";
+			}
 		} catch (SocketException&) {
 		}
-
-		reply.extract(0, 1024, buffer, 1024);
-		std::cout << buffer<< "\n";
+		std::cout.flush();
 	} catch (SocketException& e) {
 		std::cerr << "Exception was caught: " << e.description() << "\n";
 	}

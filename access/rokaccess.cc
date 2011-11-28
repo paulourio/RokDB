@@ -89,3 +89,33 @@ void RokAccess::HandleDropTable(const struct CommandDrop *info) {
 		return;
 	core.lastResult = db.DropTable(info->table_name);
 }
+
+void RokAccess::HandleSelect(const struct CommandSelect *info) {
+	core.AcquireLock();
+	core.lastResult = false;
+	if (info->all)
+		std::cout << "Tudo" << std::endl;
+	else
+		std::cout << "Not implemented" << std::endl;
+	Database db(info->database);
+	Table *table = db.ReadTable(info->table_name);
+
+	std::stringstream count;
+	count << table->records.size() << "\n";
+	core.responseBuffer = "";
+	core.responseBuffer += count.str().c_str();
+	RecordList::iterator rit;
+	for (rit = table->records.begin(); rit != table->records.end(); rit++) {
+		ColumnValues::iterator cit;
+		ColumnValues *cols = *rit;
+		for (cit = cols->begin(); cit != cols->end(); cit++) {
+			core.responseBuffer += ucopy(*cit);
+			core.responseBuffer += "\t";
+		}
+		core.responseBuffer += "\n";
+	}
+	uprint(core.responseBuffer);
+
+	core.lastResult = true;
+	delete table;
+}
