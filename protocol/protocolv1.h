@@ -7,18 +7,18 @@
 #ifndef PROTOCOLV1_H_
 #define PROTOCOLV1_H_
 
-#include <map>
 #include <unicode/unistr.h>
 #include "protocol.h"
 
 namespace rokdb {
 
-typedef std::map<UnicodeString, UnicodeString>  StringPair;
+typedef std::pair<UnicodeString, UnicodeString>  StringPair;
+typedef std::list<StringPair>  StringPairList;
 
 struct CommandCreate {
 	UnicodeString database;
 	UnicodeString table_name;
-	StringPair columns; /* <column name, type> */
+	StringPairList columns; /* <column name, type> */
 };
 
 struct CommandDrop {
@@ -29,20 +29,20 @@ struct CommandDrop {
 struct CommandInsert {
 	UnicodeString database;
 	UnicodeString table_name;
-	StringPair columns; /* <column name, value> */
+	StringPairList columns; /* <column name, value> */
 };
 
 struct CommandDelete {
 	UnicodeString database;
 	UnicodeString table_name;
-	StringPair conditions; /* <column, value> */
+	StringPairList conditions; /* <column, value> */
 };
 
 struct CommandUpdate {
 	UnicodeString database;
 	UnicodeString table_name;
-	StringPair conditions; /* <column, value> */
-	StringPair new_values; /* <column, value> */
+	StringPairList conditions; /* <column, value> */
+	StringPairList new_values; /* <column, value> */
 };
 
 struct CommandDatabase {

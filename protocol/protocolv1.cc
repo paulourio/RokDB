@@ -46,12 +46,11 @@ bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
 	UnicodeString param = ucopy(matcher->group(3, status));
 	RegexMatcher *fields = Match(insert_fields_regex, param);
 	if (fields != NULL) {
-		StringPair::iterator pos = info.columns.begin();
 		while (fields->find()) {
 			UnicodeString field(fields->group(1, status));
 			UnicodeString value(fields->group(2, status));
 
-			info.columns.insert(pos, std::make_pair(field, value));
+			info.columns.push_back(std::make_pair(field, value));
 		}
 		delete fields;
 	}
@@ -101,7 +100,7 @@ bool ProtocolV1::CommandCreateTable(RegexMatcher *matcher) {
 			UnicodeString name(columns->group(1, status));
 			UnicodeString type(columns->group(2, status));
 
-			info.columns.insert(std::make_pair(name, type));
+			info.columns.push_back(std::make_pair(name, type));
 		}
 		delete columns;
 	}

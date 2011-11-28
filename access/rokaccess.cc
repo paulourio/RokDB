@@ -26,8 +26,8 @@ void RokAccess::HandleInsert(const struct CommandInsert *info) {
 	std::cout << std::endl;
 
 
-	StringPair::iterator it;
-	StringPair columns = info->columns;
+	StringPairList::iterator it;
+	StringPairList columns = info->columns;
 
 	std::cout << "Colunas: " << info->columns.size() << std::endl;
 
@@ -63,8 +63,8 @@ void RokAccess::HandleCreateTable(const struct CommandCreate *info) {
 
 	Table *table = db.CreateTable(info->table_name);
 	if (table != NULL) {
-		StringPair::iterator it;
-		StringPair cols = info->columns;
+		StringPairList::iterator it;
+		StringPairList cols = info->columns;
 
 		for (it = cols.begin(); it != cols.end(); it++) {
 			Column *col = table->NewColumn();
