@@ -12,7 +12,9 @@ using namespace rokdb;
 extern RokDB core;
 
 RokDB::RokDB() :
-	config_file("rokdb.conf") {
+	config_file("rokdb.conf"),
+	lastResult(false),
+	responseBuffer("") {
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
 

@@ -38,7 +38,10 @@ public:
 	void AcquireLock();
 	void FreeLock();
 
-	bool lastResult;
+	bool lastResult; /* Thread get here the result of last executed command */
+	 /* Out buffer. First thread that find this buffer not empty will send
+	  * to client. */
+	UnicodeString responseBuffer;
 };
 
 }

@@ -34,15 +34,12 @@ void RokAccess::HandleInsert(const struct CommandInsert *info) {
 	if (table == NULL)
 		return;
 
-	std::cout << table->records.size() << std::endl;
-
 	ColumnValues *vals = new ColumnValues();
 
 	vals->assign(info->values.begin(), info->values.end());
 	table->records.push_back(vals);
 
 	core.lastResult = db.WriteTable(*table);
-	std::cout << table->records.size() << std::endl;
 	delete table;
 }
 
