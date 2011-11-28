@@ -62,7 +62,7 @@ bool StorageWriter::WriteHeader(char *table) {
 	memset(filename, 0, MAX_STRING);
 	strcpy(filename, table);
 	strcat(filename, HEADER_EXTENSION);
-	file = fopen(filename, "w");
+	file = fopen(filename, "wb");
 	if (file == NULL) {
 		error("Can't open table to write.");
 		return false;

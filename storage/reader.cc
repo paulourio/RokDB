@@ -35,7 +35,7 @@ bool StorageReader::ReadHeader(char *path, Table &table) {
 	memset(filename, 0, MAX_STRING);
 	strcpy(filename, path);
 	strcat(filename, HEADER_EXTENSION);
-	file = fopen(filename, "r");
+	file = fopen(filename, "rb");
 	if (file == NULL) {
 		error("Can't open table to read.");
 		return false;
