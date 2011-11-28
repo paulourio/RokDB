@@ -37,8 +37,7 @@ bool StorageWriter::LoadTable(const Table &table) {
 		col->name.extract(0, col->name.length(), column->name, MAX_NAMESTR);
 		column->not_null = col->not_null? 1: 0;
 		column->unique = col->unique? 1: 0;
-		column->size = col->size;
-		column->type = 0;
+		column->type = col->type;
 		this->columns.push_back(column);
 	}
 	return true;

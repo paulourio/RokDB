@@ -4,6 +4,7 @@
  *  Created on: 28/11/2011
  */
 #include <cstdlib>
+#include <cstring>
 #include "table.h"
 
 using namespace rokdb;
@@ -23,4 +24,11 @@ void Table::FreeColumns() {
 
 void Table::FreeRecords() {
 
+}
+
+Column *Table::NewColumn() {
+	Column *col = (Column *) malloc(sizeof(Column));
+	if (col != NULL)
+		memset(col, 0, sizeof(Column));
+	return col;
 }

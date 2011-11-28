@@ -7,8 +7,6 @@
 #ifndef DATA_H_
 #define DATA_H_
 
-///#include <cinttypes>
-
 namespace rokdb {
 
 extern "C" {

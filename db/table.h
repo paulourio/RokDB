@@ -25,6 +25,7 @@ public:
 	ColumnList columns;
 	RecordList records;
 	~Table();
+	Column *NewColumn();
 };
 
 }

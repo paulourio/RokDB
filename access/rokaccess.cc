@@ -60,12 +60,22 @@ void RokAccess::HandleCreateTable(const struct CommandCreate *info) {
 	Database db(info->database);
 	if (!db.Exists())
 		return;
-	uprint(info->table_name);
 
-	Table *asd = db.OpenTable(info->table_name);
-	if (asd != NULL) {
-		delete asd;
+	Table *table = db.CreateTable(info->table_name);
+	if (table != NULL) {
+		StringPair::iterator it;
+		StringPair cols = info->columns;
+
+		for (it = cols.begin(); it != cols.end(); it++) {
+			Column *col = table->NewColumn();
+			col->name = ucopy(it->first);
+			col->not_null = false;
+			col->unique = false;
+			col->type = ProtocolV1::IdentifyColumnType(it->second);
+			table->columns.push_back(col);
+		}
+
+		core.lastResult = db.WriteTable(*table);
+		delete table;
 	}
-	//info->table_name
-
 }

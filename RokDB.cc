@@ -24,54 +24,14 @@ RokDB::RokDB() :
 
 	get_config().ReadFromFile(config_file);
 
-	Table pessoa;
-	pessoa.name = UNICODE_STRING_SIMPLE("Pessoa");
-	UnicodeString db = UNICODE_STRING_SIMPLE("muchacho");
+	pthread_mutex_init(&lock, NULL);
+	Lock();
 
-	StorageReader reader(db);
-	reader.Read(pessoa);
-
-	std::cout << "Nome tabela: ";
-	uprint(pessoa.name);
-	std::cout << "\nColunas: " << pessoa.columns.size();
-	std::cout << "\n";
-
-	/*Table pessoa;
-	pessoa.name = UNICODE_STRING_SIMPLE("Pessoa");
-
-	Column col;
-	col.name = UNICODE_STRING_SIMPLE("Nome");
-	col.not_null = false;
-	col.unique = true;
-	col.size = 255;
-	pessoa.columns.push_back(col);
-
-	Column col1;
-	col1.name = UNICODE_STRING_SIMPLE("Idade");
-	col1.not_null = false;
-	col1.unique = true;
-	col1.size = 255;
-	pessoa.columns.push_back(col1);
-
-	Column col2;
-	col2.name = UNICODE_STRING_SIMPLE("Idade");
-	col2.not_null = false;
-	col2.unique = true;
-	col2.size = 255;
-	pessoa.columns.push_back(col2);
-
-	UnicodeString db = UNICODE_STRING_SIMPLE("muchacho");
-	StorageWriter writer(db);
-	writer.LoadTable(pessoa);
-	writer.Write();
-*/
-/*	pthread_mutex_init(&lock, NULL);
-	 Lock();
-
-	 parser.OnInsert((ProtocolEventInsert) &RokAccess::HandleInsert);
-	 parser.OnNewDatabase((ProtocolEventDatabase) &RokAccess::HandleNewDatabase);
-	 parser.OnDestroyDatabase((ProtocolEventDatabase) &RokAccess::HandleDestroyDatabase);
-	 parser.OnCreate((ProtocolEventCreate) &RokAccess::HandleCreateTable);*/
+	parser.OnInsert((ProtocolEventInsert) &RokAccess::HandleInsert);
+	parser.OnNewDatabase((ProtocolEventDatabase) &RokAccess::HandleNewDatabase);
+	parser.OnDestroyDatabase(
+			(ProtocolEventDatabase) &RokAccess::HandleDestroyDatabase);
+	parser.OnCreate((ProtocolEventCreate) &RokAccess::HandleCreateTable);
 }
 
 RokDB::~RokDB() {

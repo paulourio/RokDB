@@ -28,7 +28,6 @@ bool StorageReader::Read(Table &table) {
 	return ReadHeader(filename, table) && ReadData(filename, table);
 }
 
-#include <iostream>
 bool StorageReader::ReadHeader(char *path, Table &table) {
 	char filename[MAX_STRING];
 	int read;
@@ -37,7 +36,6 @@ bool StorageReader::ReadHeader(char *path, Table &table) {
 	strcpy(filename, path);
 	strcat(filename, HEADER_EXTENSION);
 	file = fopen(filename, "r");
-	std::cout << filename << std::endl;
 	if (file == NULL) {
 		error("Can't open table to read.");
 		return false;
@@ -94,7 +92,7 @@ bool StorageReader::ReadHeader(char *path, Table &table) {
 		col->name = cit->name;
 		col->not_null = cit->not_null == 1? true: false;
 		col->unique = cit->unique == 1? true: false;
-		col->size = cit->size;
+		col->type = cit->type;
 		table.columns.push_back(col);
 	}
 	return true;

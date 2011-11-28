@@ -45,11 +45,12 @@ bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
 	UnicodeString param = ucopy(matcher->group(3, status));
 	RegexMatcher *fields = Match(insert_fields_regex, param);
 	if (fields != NULL) {
+		StringPair::iterator pos = info.columns.begin();
 		while (fields->find()) {
 			UnicodeString field(fields->group(1, status));
 			UnicodeString value(fields->group(2, status));
 
-			info.columns.insert(std::make_pair(field, value));
+			info.columns.insert(pos, std::make_pair(field, value));
 		}
 		delete fields;
 	}
@@ -130,5 +131,15 @@ void ProtocolV1::OnNewDatabase(ProtocolEventDatabase callback) {
 
 void ProtocolV1::OnDestroyDatabase(ProtocolEventDatabase callback) {
 	destroydatabase_callback = callback;
+}
+
+int ProtocolV1::IdentifyColumnType(const UnicodeString &value) {
+	UnicodeString lower = ucopy(value);
+	lower.toLower();
+	if (lower.compare(UNICODE_STRING_SIMPLE("int")))
+		return 0;
+	if (lower.compare(UNICODE_STRING_SIMPLE("char")))
+		return 1;
+	return 2;
 }
 

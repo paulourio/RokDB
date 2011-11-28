@@ -6,8 +6,10 @@
 #include <cstring>
 #include <utils.h>
 #include <sys/stat.h>
+
 #include "database.h"
 #include "table.h"
+#include <storage/writer.h>
 
 using namespace rokdb;
 
@@ -56,4 +58,27 @@ Table *Database::OpenTable(const UnicodeString &name) {
 
 	free(table_name);
 	return NULL;
+}
+
+Table *Database::CreateTable(const UnicodeString &name) {
+	char *table_name = cstr(name);
+	char path[255];
+
+	BuildTablePath(path, 255, cdatabase_name, table_name);
+	if (FileExists(path)) {
+		free(table_name);
+		return NULL;
+	}
+
+	Table *table = new Table();
+	table->name = ucopy(name);
+	free(table_name);
+	return table;
+}
+
+bool Database::WriteTable(Table &table) {
+	StorageWriter writer(database_name);
+
+	writer.LoadTable(table);
+	return writer.Write();
 }

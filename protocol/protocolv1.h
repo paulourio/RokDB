@@ -74,6 +74,9 @@ public:
 	ProtocolEventCreate create_callback;
 	ProtocolEventDatabase newdatabase_callback;
 	ProtocolEventDatabase destroydatabase_callback;
+
+	/* const */
+	static int IdentifyColumnType(const UnicodeString &);
 };
 
 }

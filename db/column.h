@@ -13,7 +13,7 @@ struct Column {
 	UnicodeString name;
 	bool not_null;
 	bool unique;
-	int size;
+	int type;
 };
 
 typedef struct Column Column;
