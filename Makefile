@@ -5,7 +5,8 @@ LDFLAGS = `icu-config  --ldflags`
 OBJS = lib/socket.o lib/socketexception.o server/serversocket.o \
 	server/rokserver.o server/rokconnection.o access/rokaccess.o \
 	protocol/protocol.o protocol/protocolv1.o \
-	config.o debug.o utils.o RokDB.o appmutex.o main.o
+	config.o debug.o utils.o RokDB.o appmutex.o \
+	db/database.o main.o	
 
 LIBS = -lpthread
 
@@ -21,7 +22,7 @@ rokdbclient:
 	cd client && make
 
 valgrind: $(TARGET) rokdbclient
-	valgrind --leak-check=full ./bin/$(TARGET)
+	cd bin && valgrind --leak-check=full ./$(TARGET)
 	
 run: $(TARGET) rokdbclient
 	./bin/$(TARGET)

@@ -5,8 +5,11 @@
  */
 #include <iostream>
 #include <cstring>
+
 #include "rokaccess.h"
 #include <rokdb.h>
+#include <db/database.h>
+#include <utils.h>
 
 using namespace rokdb;
 
@@ -39,7 +42,13 @@ void RokAccess::HandleInsert(const struct CommandInsert *info) {
 }
 
 void RokAccess::HandleNewDatabase(const struct CommandDatabase *info) {
-	std::cout << "Database Name: ";
-	uprint(info->database_name);
-	std::cout << std::endl;
+	core.AcquireLock();
+	Database db(info->database_name);
+	core.lastResult = db.Create();
+}
+
+void RokAccess::HandleDestroyDatabase(const struct CommandDatabase *info) {
+	core.AcquireLock();
+	Database db(info->database_name);
+	core.lastResult = db.Exists() && db.Destroy() && !db.Exists();
 }

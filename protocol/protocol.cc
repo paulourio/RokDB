@@ -17,18 +17,21 @@ void Protocol::RegisterTrigger(const UnicodeString &expression,
 	triggers.insert(std::make_pair(expression, callback));
 }
 
-void Protocol::ProcessCommand(UnicodeString command) {
+bool Protocol::ProcessCommand(UnicodeString command) {
 	TriggerMap::iterator it;
 	RegexMatcher *matcher;
+	bool success = false;
 
 	for (it = triggers.begin(); it != triggers.end(); it++) {
 		matcher = Match(it->first, command);
 		if (matcher != NULL) {
 			if (matcher->find())
-				it->second(matcher);
+				if (it->second(matcher))
+					success = true;
 			delete matcher;
 		}
 	}
+	return success;
 }
 
 RegexMatcher *Protocol::Match(const UnicodeString expression,

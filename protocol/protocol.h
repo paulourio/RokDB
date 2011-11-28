@@ -14,7 +14,7 @@
 
 namespace rokdb {
 
-typedef void (* ProtocolTrigger)(RegexMatcher *);
+typedef bool (* ProtocolTrigger)(RegexMatcher *);
 typedef std::map<UnicodeString, ProtocolTrigger> TriggerMap;
 
 class Protocol {
@@ -24,7 +24,7 @@ protected:
 
 	void RegisterTrigger(const UnicodeString &, ProtocolTrigger);
 public:
-	void ProcessCommand(UnicodeString);
+	bool ProcessCommand(UnicodeString);
 	static RegexMatcher *Match(const UnicodeString expression,
 			const UnicodeString value);
 };

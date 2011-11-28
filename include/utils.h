@@ -13,7 +13,12 @@ namespace rokdb {
 
 extern "C" {
 
-UnicodeString ucopy(const UnicodeString &message);
+UnicodeString ucopy(const UnicodeString &);
+
+/* Convert an UnicodeString to C string */
+char *cstr(const UnicodeString &);
+
+bool DirectoryExists(char *directory);
 
 }
 

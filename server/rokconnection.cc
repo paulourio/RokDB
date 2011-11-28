@@ -4,6 +4,8 @@
  *  Created on: 24/11/2011
  */
 #include <iostream>
+#include <sstream>
+#include <cstdio>
 #include <cstring>
 #include <unistd.h>
 
@@ -41,9 +43,15 @@ void RokConnection::Listen() {
 		std::cout << "Received: " << buffer << std::endl;
 		std::cout.flush();
 
-		core.get_parser().ProcessCommand(data);
-
-		*socket << "1\n";
+		if (core.get_parser().ProcessCommand(data)) {
+			if (core.lastResult)
+				*socket << "1\n";
+			else
+				*socket << "0\n";
+			core.FreeLock();
+		} else {
+			*socket << "ERRO\n";
+		}
 	}
 	debug(2, "Exiting thread.\n");
 	pthread_exit(0);

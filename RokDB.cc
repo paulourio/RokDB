@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <csignal>
+#include <iostream>
 
 #include <access/rokaccess.h>
 #include "rokdb.h"
@@ -9,18 +10,21 @@ using namespace rokdb;
 
 extern RokDB core;
 
-RokDB::RokDB() : config_file("bin/rokdb.conf") {
+RokDB::RokDB() : config_file("rokdb.conf") {
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
 
 	get_config().ReadFromFile(config_file);
+	pthread_mutex_init(&lock, NULL);
 	Lock();
 
 	parser.OnInsert((ProtocolEventInsert) &RokAccess::HandleInsert);
 	parser.OnNewDatabase((ProtocolEventDatabase) &RokAccess::HandleNewDatabase);
+	parser.OnDestroyDatabase((ProtocolEventDatabase) &RokAccess::HandleDestroyDatabase);
 }
 
 RokDB::~RokDB() {
+	pthread_mutex_destroy(&lock);
 
 }
 
@@ -64,4 +68,14 @@ Config RokDB::get_config() {
 
 ProtocolV1 RokDB::get_parser() {
 	return parser;
+}
+
+void RokDB::AcquireLock() {
+	pthread_mutex_lock(&lock);
+	std::cout << "Critical Section adquirido!" << std::endl;
+}
+
+void RokDB::FreeLock() {
+	pthread_mutex_unlock(&lock);
+	std::cout << "Critical Section finalizado" << std::endl;
 }

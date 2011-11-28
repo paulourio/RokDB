@@ -31,13 +31,13 @@ ProtocolV1::ProtocolV1() :
 	RegisterTrigger(destroydatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandDestroyDatabase);
 }
 
-void ProtocolV1::CommandInsert(RegexMatcher *matcher) {
+bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
 	const UnicodeString insert_fields_regex("(\\S+)=\"(\\S+)\"[,;]? ?");
 	struct CommandInsert info;
 	UErrorCode status(U_ZERO_ERROR);
 
 	if (core.get_parser().insert_callback == NULL)
-		return;
+		return false;
 	info.database = matcher->group(1, status);
 	info.table_name = matcher->group(2, status);
 
@@ -54,28 +54,31 @@ void ProtocolV1::CommandInsert(RegexMatcher *matcher) {
 	}
 	debug(3, "Inserting");
 	core.get_parser().insert_callback(&info);
+	return true;
 }
 
-void ProtocolV1::CommandNewDatabase(RegexMatcher *matcher) {
+bool ProtocolV1::CommandNewDatabase(RegexMatcher *matcher) {
 	UErrorCode status(U_ZERO_ERROR);
 	struct CommandDatabase info;
 
 	if (core.get_parser().newdatabase_callback == NULL)
-		return;
+		return false;
 	info.database_name = ucopy(matcher->group(1, status));
 	debug(3, "Creating database");
 	core.get_parser().newdatabase_callback(&info);
+	return true;
 }
 
-void ProtocolV1::CommandDestroyDatabase(RegexMatcher *matcher) {
+bool ProtocolV1::CommandDestroyDatabase(RegexMatcher *matcher) {
 	UErrorCode status(U_ZERO_ERROR);
 	struct CommandDatabase info;
 
 	if (core.get_parser().destroydatabase_callback == NULL)
-		return;
+		return false;
 	info.database_name = ucopy(matcher->group(1, status));
 	debug(3, "Destroying database");
 	core.get_parser().destroydatabase_callback(&info);
+	return true;
 }
 
 void ProtocolV1::OnInsert(ProtocolEventInsert callback) {

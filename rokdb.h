@@ -22,6 +22,7 @@ private:
 	RokServer server;
 	AppMutex mutex;
 	ProtocolV1 parser;
+	pthread_mutex_t lock;
 
 	static void SignalHandler(int);
 	void Lock();
@@ -33,6 +34,11 @@ public:
 	RokServer get_server();
 	Config get_config();
 	ProtocolV1 get_parser();
+
+	void AcquireLock();
+	void FreeLock();
+
+	bool lastResult;
 };
 
 }

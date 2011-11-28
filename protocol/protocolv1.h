@@ -62,10 +62,9 @@ public:
 	void OnDestroyDatabase(ProtocolEventDatabase);
 
 	/* Threaded asynchronous calls */
-	static void CommandInsert(RegexMatcher *);
-	static void CommandNewDatabase(RegexMatcher *);
-	static void CommandDestroyDatabase(RegexMatcher *);
-
+	static bool CommandInsert(RegexMatcher *);
+	static bool CommandNewDatabase(RegexMatcher *);
+	static bool CommandDestroyDatabase(RegexMatcher *);
 
 	/* looool */
 	ProtocolEventInsert insert_callback;
