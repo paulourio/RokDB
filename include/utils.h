@@ -19,6 +19,9 @@ UnicodeString ucopy(const UnicodeString &);
 char *cstr(const UnicodeString &);
 
 bool DirectoryExists(char *directory);
+bool FileExists(char *file);
+/* Build the path to a table: 'dir/table' */
+char *BuildTablePath(char *dest, size_t MAX, char *dir, char *table);
 
 }
 

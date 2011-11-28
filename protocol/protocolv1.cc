@@ -29,6 +29,7 @@ ProtocolV1::ProtocolV1() :
 	RegisterTrigger(insert_regex, (ProtocolTrigger) &ProtocolV1::CommandInsert);
 	RegisterTrigger(newdatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandNewDatabase);
 	RegisterTrigger(destroydatabase_regex, (ProtocolTrigger) &ProtocolV1::CommandDestroyDatabase);
+	RegisterTrigger(createtable_regex, (ProtocolTrigger) &ProtocolV1::CommandCreateTable);
 }
 
 bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
@@ -78,6 +79,32 @@ bool ProtocolV1::CommandDestroyDatabase(RegexMatcher *matcher) {
 	info.database_name = ucopy(matcher->group(1, status));
 	debug(3, "Destroying database");
 	core.get_parser().destroydatabase_callback(&info);
+	return true;
+}
+
+bool ProtocolV1::CommandCreateTable(RegexMatcher *matcher) {
+	const UnicodeString create_fields_regex("(\\S+) (\\S+)[,;]? ?");
+	UErrorCode status(U_ZERO_ERROR);
+	struct CommandCreate info;
+
+	if (core.get_parser().create_callback == NULL)
+		return false;
+	info.database = ucopy(matcher->group(1, status));
+	info.table_name = ucopy(matcher->group(2, status));
+
+	UnicodeString param = ucopy(matcher->group(3, status));
+	RegexMatcher *columns = Match(create_fields_regex, param);
+	if (columns != NULL) {
+		while (columns->find()) {
+			UnicodeString name(columns->group(1, status));
+			UnicodeString type(columns->group(2, status));
+
+			info.columns.insert(std::make_pair(name, type));
+		}
+		delete columns;
+	}
+	debug(3, "Creating table");
+	core.get_parser().create_callback(&info);
 	return true;
 }
 

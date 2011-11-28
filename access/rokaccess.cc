@@ -9,6 +9,7 @@
 #include "rokaccess.h"
 #include <rokdb.h>
 #include <db/database.h>
+#include <db/table.h>
 #include <utils.h>
 
 using namespace rokdb;
@@ -51,4 +52,20 @@ void RokAccess::HandleDestroyDatabase(const struct CommandDatabase *info) {
 	core.AcquireLock();
 	Database db(info->database_name);
 	core.lastResult = db.Exists() && db.Destroy() && !db.Exists();
+}
+
+void RokAccess::HandleCreateTable(const struct CommandCreate *info) {
+	core.AcquireLock();
+	core.lastResult = false;
+	Database db(info->database);
+	if (!db.Exists())
+		return;
+	uprint(info->table_name);
+
+	Table *asd = db.OpenTable(info->table_name);
+	if (asd != NULL) {
+		delete asd;
+	}
+	//info->table_name
+
 }

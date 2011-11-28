@@ -7,16 +7,16 @@
 #ifndef COLUMN_H_
 #define COLUMN_H_
 
-namespace rokrb {
+namespace rokdb {
 
-class Column {
-public:
+struct Column {
 	UnicodeString name;
 	bool not_null;
 	bool unique;
 	int size;
 };
 
+typedef struct Column Column;
 typedef std::list<Column> ColumnList;
 
 }

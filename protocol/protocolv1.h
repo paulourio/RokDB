@@ -65,6 +65,7 @@ public:
 	static bool CommandInsert(RegexMatcher *);
 	static bool CommandNewDatabase(RegexMatcher *);
 	static bool CommandDestroyDatabase(RegexMatcher *);
+	static bool CommandCreateTable(RegexMatcher *);
 
 	/* looool */
 	ProtocolEventInsert insert_callback;

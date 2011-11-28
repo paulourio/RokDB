@@ -4,9 +4,9 @@ LDFLAGS = `icu-config  --ldflags`
 
 OBJS = lib/socket.o lib/socketexception.o server/serversocket.o \
 	server/rokserver.o server/rokconnection.o access/rokaccess.o \
-	protocol/protocol.o protocol/protocolv1.o \
-	config.o debug.o utils.o RokDB.o appmutex.o \
-	db/database.o main.o	
+	protocol/protocol.o protocol/protocolv1.o config.o debug.o utils.o \
+	db/database.o storage/storage.o storage/writer.o storage/reader.o \
+	RokDB.o appmutex.o main.o	
 
 LIBS = -lpthread
 

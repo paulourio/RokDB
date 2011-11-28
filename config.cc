@@ -17,7 +17,7 @@ Config::Config() :
 	port_regexp("^\\s*port *=\\s*([\\d]+)\\s*$"),
 	debug_regexp("^\\s*debug\\s*=\\s*([\\d]+)\\s*$"),
 	timeout_regexp("^\\s*ConnectionTimeOut\\s*=\\s*([\\d]+)\\s*$"),
-	status(U_ZERO_ERROR), port(3666), debug_level(4) {
+	status(U_ZERO_ERROR), port(3666), debug_level(5) {
 }
 
 Config::~Config() {

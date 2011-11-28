@@ -17,6 +17,7 @@ public:
 	static void HandleInsert(const struct CommandInsert *);
 	static void HandleNewDatabase(const struct CommandDatabase *);
 	static void HandleDestroyDatabase(const struct CommandDatabase *);
+	static void HandleCreateTable(const struct CommandCreate *);
 };
 
 }

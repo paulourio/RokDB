@@ -18,7 +18,7 @@ using namespace rokdb;
 extern RokDB core;
 
 RokConnection::RokConnection(ServerSocket *psocket) {
-	debug(1, "Connection opened.");
+	debug(1, "Thread started (connection opened)");
 	socket = psocket;
 	active = true;
 }
@@ -27,7 +27,7 @@ RokConnection::~RokConnection() {
 }
 
 void RokConnection::Listen() {
-	debug(2, "Starting to listen");
+	debug(4, "Starting to listen");
 	while (active) {
 		UnicodeString data;
 
@@ -53,7 +53,7 @@ void RokConnection::Listen() {
 			*socket << "ERRO\n";
 		}
 	}
-	debug(2, "Exiting thread.\n");
+	debug(1, "Exiting thread (connection closed)\n");
 	pthread_exit(0);
 }
 
