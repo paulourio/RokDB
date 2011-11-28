@@ -5,6 +5,8 @@
  */
 #include <iostream>
 #include <cstring>
+#include <map>
+#include <utility>
 
 #include "rokaccess.h"
 #include <rokdb.h>
@@ -25,21 +27,23 @@ void RokAccess::HandleInsert(const struct CommandInsert *info) {
 	uprint(info->table_name);
 	std::cout << std::endl;
 
+	core.AcquireLock();
+	core.lastResult = false;
+	Database db(info->database);
+	Table *table = db.ReadTable(info->table_name);
+	if (table == NULL)
+		return;
 
-	StringPairList::iterator it;
-	StringPairList columns = info->columns;
+	std::cout << table->records.size() << std::endl;
 
-	std::cout << "Colunas: " << info->columns.size() << std::endl;
+	ColumnValues *vals = new ColumnValues();
 
-	for (it = columns.begin(); it != columns.end(); it++) {
-		char valor[255], campo[255];
+	vals->assign(info->values.begin(), info->values.end());
+	table->records.push_back(vals);
 
-		memset(valor, 0, 255);
-		memset(campo, 0, 255);
-		it->first.extract(0, 255, campo, 255);
-		it->second.extract(0, 255, valor, 255);
-		std::cout << "Campo " << campo << " com valor " << valor << std::endl;
-	}
+	core.lastResult = db.WriteTable(*table);
+	std::cout << table->records.size() << std::endl;
+	delete table;
 }
 
 void RokAccess::HandleNewDatabase(const struct CommandDatabase *info) {

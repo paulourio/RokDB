@@ -99,5 +99,44 @@ bool StorageReader::ReadHeader(char *path, Table &table) {
 }
 
 bool StorageReader::ReadData(char *path, Table &table) {
+	char filename[MAX_STRING];
+	int read;
+
+	table.records.clear();
+	memset(filename, 0, MAX_STRING);
+	strcpy(filename, path);
+	strcat(filename, DATA_EXTENSION);
+	file = fopen(filename, "rb");
+	if (file == NULL)
+		return true;
+	/* Read start of header */
+	if (fseek(file, 0, SEEK_SET) == -1 || feof(file)) {
+		error("Can't read table (empty)."); /* TODO : check when remove all records */
+		fclose(file);
+		return false;
+	}
+	/* Read records */
+	UnicodeString value;
+	char buffer[MAX_STRING];
+	while (!feof(file)) {
+		ColumnValues *vals = new ColumnValues();
+		int i = columns.size();
+		while (i--) {
+			/* Read column value */
+			memset(buffer, 0, MAX_STRING);
+			read = fread(buffer, sizeof(buffer), 1, file);
+			if (read != 1) {
+				if (feof(file))
+					break;
+				error("Can't read column value");
+				fclose(file);
+				return false;
+			}
+			value = buffer;
+			vals->push_back(value);
+		}
+		table.records.push_back(vals);
+	}
+	fclose(file);
 	return true;
 }

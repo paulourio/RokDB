@@ -10,6 +10,7 @@
 #include "database.h"
 #include "table.h"
 #include <storage/writer.h>
+#include <storage/reader.h>
 
 using namespace rokdb;
 
@@ -41,23 +42,16 @@ bool Database::Exists() {
 	return stat(cdatabase_name, &st) == 0;
 }
 
-#include <iostream>
 Table *Database::ReadTable(const UnicodeString &name) {
-	char *table_name = cstr(name);
-	char path[255];
+	StorageReader reader(database_name);
+	Table *table = new Table();
 
-	BuildTablePath(path, 255, cdatabase_name, table_name);
-	if (!FileExists(path)) {
-		free(table_name);
-		return NULL;
+	table->name = ucopy(name);
+	if (!reader.Read(*table)) {
+		delete table;
+		table = NULL;
 	}
-
-
-
-	std::cout << path << std::endl;
-
-	free(table_name);
-	return NULL;
+	return table;
 }
 
 Table *Database::CreateTable(const UnicodeString &name) {

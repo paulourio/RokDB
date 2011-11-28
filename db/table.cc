@@ -23,7 +23,10 @@ void Table::FreeColumns() {
 }
 
 void Table::FreeRecords() {
-
+	while (!records.empty()) {
+		delete records.front();
+		records.pop_front();
+	}
 }
 
 Column *Table::NewColumn() {

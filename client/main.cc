@@ -31,11 +31,13 @@ void ProcessCommand() {
 			std::cout << ">>> ";
 			std::cin.getline(input, 1024);
 			message = input;
-			if (message.isEmpty())
-				if (std::cin.eof())
+			if (message.isEmpty()) {
+				if (std::cin.eof()) {
 					exit(-1);
-				else
+				} else {
 					return;
+				}
+			}
 			client_socket << message;
 			client_socket >> reply;
 		} catch (SocketException&) {

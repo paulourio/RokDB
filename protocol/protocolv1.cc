@@ -8,6 +8,7 @@
 #include <unicode/regex.h>
 #include <rokdb.h>
 #include <utils.h>
+#include <utility>
 
 using namespace rokdb;
 
@@ -46,12 +47,8 @@ bool ProtocolV1::CommandInsert(RegexMatcher *matcher) {
 	UnicodeString param = ucopy(matcher->group(3, status));
 	RegexMatcher *fields = Match(insert_fields_regex, param);
 	if (fields != NULL) {
-		while (fields->find()) {
-			UnicodeString field(fields->group(1, status));
-			UnicodeString value(fields->group(2, status));
-
-			info.columns.push_back(std::make_pair(field, value));
-		}
+		while (fields->find())
+			info.values.push_back(ucopy(fields->group(2, status)));
 		delete fields;
 	}
 	debug(3, "Inserting");
@@ -97,8 +94,8 @@ bool ProtocolV1::CommandCreateTable(RegexMatcher *matcher) {
 	RegexMatcher *columns = Match(create_fields_regex, param);
 	if (columns != NULL) {
 		while (columns->find()) {
-			UnicodeString name(columns->group(1, status));
-			UnicodeString type(columns->group(2, status));
+			UnicodeString name(ucopy(columns->group(1, status)));
+			UnicodeString type(ucopy(columns->group(2, status)));
 
 			info.columns.push_back(std::make_pair(name, type));
 		}

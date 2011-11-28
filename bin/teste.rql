@@ -1,0 +1,5 @@
+DESTROY muchacho;
+GENESIS muchacho;
+AT muchacho CREATE pessoas WITH nome CHAR, idade INT;
+AT muchacho IN pessoas INSERT nome="Johnny", idade="15";
+

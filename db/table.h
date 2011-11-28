@@ -8,13 +8,15 @@
 
 #include <unicode/unistr.h>
 #include <list>
+#include <map>
+#include <utility>
 
 #include "column.h"
 
 namespace rokdb {
 
-typedef std::list<UnicodeString> Record;
-typedef std::list<Record> RecordList;
+typedef std::list<UnicodeString> ColumnValues;
+typedef std::list<ColumnValues *> RecordList;
 
 class Table {
 private:

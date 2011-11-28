@@ -7,10 +7,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cerrno>
+#include <map>
+#include <unicode/unistr.h>
 
 #include <debug.h>
 #include <utils.h>
 #include "writer.h"
+#include "data.h"
 #include <db/column.h>
 
 using namespace rokdb;
@@ -41,6 +44,8 @@ bool StorageWriter::LoadTable(const Table &table) {
 		column->type = col->type;
 		this->columns.push_back(column);
 	}
+	/* Records */
+	records.assign(table.records.begin(), table.records.end());
 	return true;
 }
 
@@ -60,12 +65,12 @@ bool StorageWriter::WriteHeader(char *table) {
 	char filename[MAX_STRING];
 	int written;
 
-	memset(filename, 0, MAX_STRING);
+	memset(filename, 0, sizeof(filename));
 	strcpy(filename, table);
 	strcat(filename, HEADER_EXTENSION);
 	file = fopen(filename, "wb");
 	if (file == NULL) {
-		error("Can't open table to write.");
+		error("Can't open table header to write.");
 		ShowErrno();
 		return false;
 	}
@@ -92,7 +97,35 @@ bool StorageWriter::WriteHeader(char *table) {
 }
 
 bool StorageWriter::WriteData(char *table) {
+	char filename[MAX_STRING];
 
+	memset(filename, 0, sizeof(filename));
+	strcpy(filename, table);
+	strcat(filename, DATA_EXTENSION);
+	file = fopen(filename, "wb");
+	if (file == NULL) {
+		error("Can't open table data to write.");
+		ShowErrno();
+		return false;
+	}
+	ColumnValues::iterator cols;
+	RecordList::iterator it;
+	char buffer[MAX_STRING];
+	for (it = records.begin(); it != records.end(); it++) {
+		ColumnValues *itcol = *it;
+		for (cols = itcol->begin(); cols != itcol->end(); cols++) {
+			/* Write its value */
+			memset(buffer, 0, sizeof(buffer));
+			cols->extract(0, cols->length(), buffer, sizeof(buffer));
+			if (fwrite(buffer, sizeof(buffer), 1, file) != 1) {
+				error("Can't write table data.");
+				fclose(file);
+				return false;
+			}
+		}
+	}
+	fflush(file);
+	fclose(file);
 	return true;
 }
 
@@ -100,7 +133,7 @@ bool StorageWriter::RemoveTable(const UnicodeString &table) {
 	char filename[MAX_STRING];
 	char *ctable = cstr(table);
 
-	BuildTablePath(filename, MAX_STRING, this->directory, ctable);
+	BuildTablePath(filename, sizeof(filename), this->directory, ctable);
 	free(ctable);
 	return RemoveHeader(filename) && RemoveData(filename);
 }
@@ -109,7 +142,7 @@ bool StorageWriter::RemoveHeader(char *table) {
 	char filename[MAX_STRING];
 	int code;
 
-	memset(filename, 0, MAX_STRING);
+	memset(filename, 0, sizeof(filename));
 	strcpy(filename, table);
 	strcat(filename, HEADER_EXTENSION);
 	if (!FileExists(filename))

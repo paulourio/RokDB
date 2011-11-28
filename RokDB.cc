@@ -11,12 +11,6 @@ using namespace rokdb;
 
 extern RokDB core;
 
-/* FIXME */
-#include <iostream>
-#include <db/table.h>
-#include <storage/writer.h>
-#include <storage/reader.h>
-
 RokDB::RokDB() :
 	config_file("rokdb.conf") {
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);

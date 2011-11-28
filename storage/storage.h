@@ -8,6 +8,7 @@
 #define STORAGE_H_
 
 #include <list>
+#include <map>
 #include <cstdio>
 #include <unicode/unistr.h>
 
@@ -24,6 +25,7 @@ public:
 	char directory[MAX_STRING];
 	struct StorageTableHeader header;
 	StorageTableColumnList columns;
+	RecordList records;
 
 	void ClearData(); /* Initialize header and clear column list */
 
