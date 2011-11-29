@@ -27,7 +27,6 @@ RokConnection::~RokConnection() {
 }
 
 void RokConnection::Listen() {
-	debug(4, "Starting to listen");
 	while (active) {
 		UnicodeString data;
 
@@ -60,6 +59,7 @@ void RokConnection::Listen() {
 			core.FreeLock();
 		} else {
 			*socket << "ERRO\n";
+			*socket << "0\n";
 		}
 	}
 	debug(1, "Exiting thread (connection closed)\n");

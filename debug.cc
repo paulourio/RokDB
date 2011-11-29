@@ -7,6 +7,7 @@
 #include <unicode/unistr.h>
 #include <unicode/regex.h>
 #include <cstring>
+#include <pthread.h>
 
 #include <debug.h>
 #include <config.h>
@@ -36,7 +37,12 @@ void debug(const int level, const std::string message) {
 			std::clog << "\033[36m";
 			break;
 		}
-		std::clog << message << std::endl;
+		std::stringstream msg;
+
+		msg << "(" << pthread_self() << "): ";
+		msg << message;
+
+		std::clog << msg.str() << std::endl;
 		std::clog << "\033[0m";
 		std::clog.flush();
 	}

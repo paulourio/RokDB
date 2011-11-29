@@ -8,4 +8,5 @@ AT muchacho IN pessoas INSERT nome="André", idade="25", peso="14";
 AT muchacho IN pessoas INSERT nome="Maurício", idade="12", peso="34";
 AT muchacho IN pessoas INSERT nome="Thiago", idade="17", peso="54";
 AT muchacho IN pessoas SELECT ALL;
+AT muchacho IN pessoas SELECT nome="THIAGO";
 

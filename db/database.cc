@@ -56,10 +56,11 @@ Table *Database::ReadTable(const UnicodeString &name) {
 
 Table *Database::CreateTable(const UnicodeString &name) {
 	char *table_name = cstr(name);
-	char path[255];
+	char header_file[255];
 
-	BuildTablePath(path, 255, cdatabase_name, table_name);
-	if (FileExists(path)) {
+	BuildTablePath(header_file, sizeof(header_file), cdatabase_name, table_name);
+	strcat(header_file, HEADER_EXTENSION);
+	if (FileExists(header_file)) {
 		free(table_name);
 		return NULL;
 	}

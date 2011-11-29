@@ -134,7 +134,7 @@ bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
 		return false;
 	info.database = ucopy(matcher->group(1, status));
 	info.table_name = ucopy(matcher->group(2, status));
-	info.all = matcher->group(4, status).isEmpty();
+	info.all = !ucopy(matcher->group(4, status)).isEmpty();
 
 	UnicodeString param = ucopy(matcher->group(3, status));
 	if (!param.isEmpty()) {
@@ -143,7 +143,7 @@ bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
 			while (fields->find()) {
 				UnicodeString column = ucopy(fields->group(1, status));
 				UnicodeString value = ucopy(fields->group(2, status));
-				info.conditions.push_back(std::make_pair(column, value));
+				info.conditions.push_back(std::make_pair(ucopy(column), ucopy(value)));
 			}
 			delete fields;
 		}

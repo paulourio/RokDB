@@ -93,21 +93,45 @@ void RokAccess::HandleDropTable(const struct CommandDrop *info) {
 void RokAccess::HandleSelect(const struct CommandSelect *info) {
 	core.AcquireLock();
 	core.lastResult = false;
-	if (info->all)
-		std::cout << "Tudo" << std::endl;
-	else
-		std::cout << "Not implemented" << std::endl;
 	Database db(info->database);
 	Table *table = db.ReadTable(info->table_name);
 
 	std::stringstream count;
-	count << table->records.size() << "\n";
+	//count << table->records.size() << "\n";
 	core.responseBuffer = "";
 	core.responseBuffer += count.str().c_str();
 	RecordList::iterator rit;
 	for (rit = table->records.begin(); rit != table->records.end(); rit++) {
 		ColumnValues::iterator cit;
 		ColumnValues *cols = *rit;
+		bool valid = true;
+
+		if (!info->all) {
+			StringPairList spl = info->conditions;
+			StringPairList::iterator spl_it;
+
+			for (spl_it = spl.begin(); spl_it != spl.end(); spl_it++) {
+				int index = table->GetColumnIndex(spl_it->first);
+				if (index == -1) /* Column not found */
+					return;
+				UnicodeString first, second;
+				first = spl_it->second;
+				first.toLower();
+				cit = cols->begin();
+				while (index--)
+					cit++;
+				second = ucopy(*cit);
+				second.toLower();
+				if (first.compare(second) != 0) {
+					valid = false;
+					break;
+				}
+			}
+		}
+		if (!valid)
+			continue;
+
+		cols = *rit;
 		for (cit = cols->begin(); cit != cols->end(); cit++) {
 			core.responseBuffer += ucopy(*cit);
 			core.responseBuffer += "\t";

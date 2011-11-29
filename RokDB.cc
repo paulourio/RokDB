@@ -81,11 +81,11 @@ ProtocolV1 RokDB::get_parser() {
 }
 
 void RokDB::AcquireLock() {
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&core.lock);
 	debug(2, "lock() adquirido!");
 }
 
 void RokDB::FreeLock() {
-	pthread_mutex_unlock(&lock);
+	pthread_mutex_unlock(&core.lock);
 	debug(2, "unlock() finalizado");
 }
