@@ -126,24 +126,30 @@ bool ProtocolV1::CommandDropTable(RegexMatcher *matcher) {
 }
 
 bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
-	const UnicodeString select_fields_regex("(\\S+)=\"(\\S+)\"[,;]? ?");
-	UErrorCode status(U_ZERO_ERROR);
+	const UnicodeString select_fields_regex("(\\S+)=\"(\\S+)\"[,;]?");
 	struct CommandSelect info;
+	UErrorCode status(U_ZERO_ERROR);
+	RegexMatcher *fields;
 
 	if (core.get_parser().select_callback == NULL)
 		return false;
-	info.database = ucopy(matcher->group(1, status));
+	info.database = matcher->group(1, status);
 	info.table_name = ucopy(matcher->group(2, status));
-	info.all = !ucopy(matcher->group(4, status)).isEmpty();
+	info.all = !matcher->group(4, status).isEmpty();
+	UnicodeString param(matcher->group(3, status));
 
-	UnicodeString param = ucopy(matcher->group(3, status));
 	if (!param.isEmpty()) {
-		RegexMatcher *fields = Match(select_fields_regex, param);
+		fields = Match(select_fields_regex, param);
+		debug(3, "Matched");
 		if (fields != NULL) {
 			while (fields->find()) {
-				UnicodeString column = ucopy(fields->group(1, status));
-				UnicodeString value = ucopy(fields->group(2, status));
+
+				debug(3, "Copying");
+				UnicodeString column(fields->group(1, status));
+				UnicodeString value(fields->group(2, status));
 				info.conditions.push_back(std::make_pair(ucopy(column), ucopy(value)));
+				debug(3, "find ok");
+
 			}
 			delete fields;
 		}

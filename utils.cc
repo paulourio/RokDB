@@ -17,16 +17,18 @@ extern int errno;
 
 UnicodeString ucopy(const UnicodeString &message) {
 	UnicodeString new_string;
-	char buffer[message.length() * sizeof(UChar)];
+	size_t buffsize = (message.length() + 1) * sizeof(UChar) * sizeof(char);
+	char buffer[buffsize];
 
-	message.extract(0, message.length(), buffer, 255);
+	memset(buffer, 0, sizeof(buffer));
+	message.extract(0, message.length(), buffer, sizeof(buffer));
 	new_string = buffer;
 	return new_string;
 }
 
 char *cstr(const UnicodeString &message) {
-	size_t size = (message.length() + 1) * sizeof(UChar);
-	char *buffer = (char *) malloc(size * sizeof(char));
+	size_t size = (message.length() + 1) * sizeof(UChar) * sizeof(char);
+	char *buffer = (char *) malloc(size);
 
 	memset(buffer, 0, size);
 	message.extract(0, message.length(), buffer, size);
