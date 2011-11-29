@@ -20,7 +20,7 @@
 
 using namespace rokdb;
 
-ClientSocket client_socket("localhost", 3666);
+ClientSocket client_socket("192.168.0.104", 3666);
 
 void ProcessCommand() {
 	char buffer[1024];
