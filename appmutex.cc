@@ -56,6 +56,9 @@ bool AppMutex::CreateMutex(std::string filename) {
 		}
 		return false;
 	}
+	std::stringstream msg;
+	msg << "Lock file: " << lock_file;
+	debug(4, msg.str());
 	return true;
 }
 
