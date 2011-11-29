@@ -96,9 +96,9 @@ void RokAccess::HandleSelect(const struct CommandSelect *info) {
 	Database db(info->database);
 	Table *table = db.ReadTable(info->table_name);
 
-	std::stringstream count;
-	count << table->records.size() << "\n";
-	core.responseBuffer = count.str().c_str();
+	std::stringstream record_list;
+	int record_count = 0;
+
 	RecordList::iterator rit;
 	for (rit = table->records.begin(); rit != table->records.end(); rit++) {
 		ColumnValues::iterator cit;
@@ -132,11 +132,20 @@ void RokAccess::HandleSelect(const struct CommandSelect *info) {
 
 		cols = *rit;
 		for (cit = cols->begin(); cit != cols->end(); cit++) {
-			core.responseBuffer += ucopy(*cit);
-			core.responseBuffer += "\t";
+			char *c = cstr(ucopy(*cit));
+			record_list << c;
+			record_list << "\t";
+			free(c);
 		}
-		core.responseBuffer += "\n";
+		record_count++;
+		record_list << "\n";
 	}
+
+	std::stringstream count;
+	count << record_count << "\n";
+	core.responseBuffer = count.str().c_str();
+	core.responseBuffer += record_list.str().c_str();
+
 	uprint(core.responseBuffer);
 
 	core.lastResult = true;
