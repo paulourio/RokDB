@@ -25,7 +25,7 @@ valgrind: $(TARGET) rokdbclient
 	cd bin && valgrind --leak-check=full ./$(TARGET)
 	
 run: $(TARGET) rokdbclient
-	./bin/$(TARGET)
+	cd bin && ./$(TARGET)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
