@@ -18,6 +18,8 @@
 
 using namespace rokdb;
 
+extern int errno;
+
 StorageWriter::StorageWriter(UnicodeString &database) : Storage(database) {
 
 }
@@ -172,8 +174,6 @@ bool StorageWriter::RemoveData(char *table) {
 }
 
 void StorageWriter::ShowErrno() {
-	extern int errno;
-
 	switch (errno) {
 	case EACCES:
 		error("StorageWriter: Permission denied for file handling.");
