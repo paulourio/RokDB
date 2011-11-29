@@ -97,9 +97,8 @@ void RokAccess::HandleSelect(const struct CommandSelect *info) {
 	Table *table = db.ReadTable(info->table_name);
 
 	std::stringstream count;
-	//count << table->records.size() << "\n";
-	core.responseBuffer = "";
-	core.responseBuffer += count.str().c_str();
+	count << table->records.size() << "\n";
+	core.responseBuffer = count.str().c_str();
 	RecordList::iterator rit;
 	for (rit = table->records.begin(); rit != table->records.end(); rit++) {
 		ColumnValues::iterator cit;

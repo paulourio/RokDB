@@ -20,6 +20,7 @@ Remover de uma tabela
 AT [database] IN [tablea] REMOVE [[campo1="valor"], ...];
 
 Busca
+AT [database] IN [tabela] SELECT ALL;
 AT [database] IN [tabela] SELECT [[campo1="expressão regular"], ...];
 
 

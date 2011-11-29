@@ -20,7 +20,7 @@
 
 using namespace rokdb;
 
-ClientSocket client_socket("192.168.0.104", 3666);
+ClientSocket client_socket("localhost", 3666); // 192.168.0.104
 
 void ProcessCommand() {
 	char buffer[1024];
@@ -50,17 +50,6 @@ void ProcessCommand() {
 			rows.extract(0, 1024, buffer, 1024);
 			std::cout << buffer;
 
-			char row[20];
-			int row_count;
-
-			memset(row, 0, sizeof(row));
-			rows.extract(0, rows.length(), row, 20);
-			sscanf(row, "%d", &row_count);
-			while (row_count-- > 0) {
-				client_socket >> rows;
-				rows.extract(0, 1024, buffer, 1024);
-				std::cout << buffer<< "\n";
-			}
 		} catch (SocketException&) {
 		}
 		std::cout.flush();

@@ -26,6 +26,9 @@ valgrind: $(TARGET) rokdbclient
 	
 run: $(TARGET) rokdbclient
 	cd bin && ./$(TARGET)
+	
+cli: $(TARGET) rokdbclient
+	cd bin && ./rdbclient
 
 clean:
 	rm -f $(OBJS) $(TARGET)
