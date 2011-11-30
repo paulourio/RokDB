@@ -28,7 +28,7 @@ ProtocolV1::ProtocolV1() :
 	UnicodeString insert_regex("^ *AT +(\\S+) +IN +(\\S+) +INSERT +(.+) *; *$");
 	UnicodeString update_regex("^ *AT +(\\S+) +IN +(\\S+) +SET +(.+) +WHERE +(.+) *; *$");
 	UnicodeString remove_regex("^ *AT +(\\S+) +IN +(\\S+) +REMOVE +(.+) *; *$");
-	UnicodeString select_regex("^ *AT +(\\S+) +IN +(\\S+) +SELECT +(.+)|(ALL) *; *$");
+	UnicodeString select_regex("^ *AT +(\\S+) +IN +(\\S+) +SELECT +(.+) *; *$");
 	UnicodeString http_regex("GET \\S+ HTTP");
 
 	RegisterTrigger(insert_regex, (ProtocolTrigger) &ProtocolV1::CommandInsert);
@@ -87,7 +87,7 @@ bool ProtocolV1::CommandDestroyDatabase(RegexMatcher *matcher) {
 }
 
 bool ProtocolV1::CommandCreateTable(RegexMatcher *matcher) {
-	const UnicodeString create_fields_regex("(\\S+) (\\S+)[,;]? ?");
+	const UnicodeString create_fields_regex("(\\S+) (\\S+),? ?");
 	UErrorCode status(U_ZERO_ERROR);
 	struct CommandCreate info;
 
@@ -126,7 +126,7 @@ bool ProtocolV1::CommandDropTable(RegexMatcher *matcher) {
 }
 
 bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
-	const UnicodeString select_fields_regex("(\\S+)=\"(\\S+)\"[,;]?");
+	const UnicodeString select_fields_regex("(\\S+)=\"(\\S+)\"[,;]? ?");
 	struct CommandSelect info;
 	UErrorCode status(U_ZERO_ERROR);
 	RegexMatcher *fields;
@@ -135,21 +135,16 @@ bool ProtocolV1::CommandSelect(RegexMatcher *matcher) {
 		return false;
 	info.database = matcher->group(1, status);
 	info.table_name = ucopy(matcher->group(2, status));
-	info.all = !matcher->group(4, status).isEmpty();
-	UnicodeString param(matcher->group(3, status));
+	UnicodeString param = matcher->group(3, status);
+	info.all = param.compare("all") == 0;
 
-	if (!param.isEmpty()) {
+	if (!info.all) {
 		fields = Match(select_fields_regex, param);
-		debug(3, "Matched");
 		if (fields != NULL) {
-			while (fields->find()) {
-
-				debug(3, "Copying");
+			while (!fields->hitEnd() && fields->find()) {
 				UnicodeString column(fields->group(1, status));
 				UnicodeString value(fields->group(2, status));
 				info.conditions.push_back(std::make_pair(ucopy(column), ucopy(value)));
-				debug(3, "find ok");
-
 			}
 			delete fields;
 		}

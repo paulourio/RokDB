@@ -36,6 +36,8 @@ void debug(const int level, const std::string message) {
 		case 4:
 			std::clog << "\033[36m";
 			break;
+		case 5:
+			break;
 		}
 		std::stringstream msg;
 

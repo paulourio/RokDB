@@ -20,7 +20,7 @@ RokDB::RokDB() :
 	signal(SIGTERM, (sighandler_t) &RokDB::SignalHandler);
 	signal(SIGINT, (sighandler_t) &RokDB::SignalHandler);
 
-	get_config().ReadFromFile(config_file);
+	config.ReadFromFile(config_file);
 
 	pthread_mutex_init(&lock, NULL);
 	Lock();

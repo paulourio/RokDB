@@ -19,15 +19,14 @@ using namespace rokdb;
 extern RokDB core;
 
 void RokAccess::HandleInsert(const struct CommandInsert *info) {
-	std::cout << "Recebi comando de inserção!" << std::endl;
-	std::cout << "Banco: ";
-	uprint(info->database);
-
-	std::cout << " - Tabela: ";
-	uprint(info->table_name);
-	std::cout << std::endl;
-
 	core.AcquireLock();
+	char *tbl = cstr(info->table_name);
+	if (tbl != NULL) {
+		std::stringstream msg;
+		msg << "Inserindo na tabela " << tbl;
+		debug(5, msg.str());
+		free(tbl);
+	}
 	core.lastResult = false;
 	Database db(info->database);
 	Table *table = db.ReadTable(info->table_name);
@@ -146,7 +145,13 @@ void RokAccess::HandleSelect(const struct CommandSelect *info) {
 	core.responseBuffer = count.str().c_str();
 	core.responseBuffer += record_list.str().c_str();
 
-	uprint(core.responseBuffer);
+	char *ret = cstr(core.responseBuffer);
+	if (ret != NULL) {
+		std::stringstream sret;
+		sret << ret;
+		debug(5, sret.str());
+		free(ret);
+	}
 
 	core.lastResult = true;
 	delete table;

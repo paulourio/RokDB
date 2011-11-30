@@ -25,9 +25,10 @@ bool Protocol::ProcessCommand(UnicodeString command) {
 	for (it = triggers.begin(); it != triggers.end(); it++) {
 		matcher = Match(it->first, command);
 		if (matcher != NULL) {
-			if (matcher->find())
+			if (matcher->find()) {
 				if (it->second(matcher))
 					success = true;
+			}
 			delete matcher;
 		}
 	}

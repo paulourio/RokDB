@@ -37,8 +37,11 @@ void RokConnection::Listen() {
 		char buffer[::MAXRECV];
 		memset(buffer, 0, sizeof(buffer));
 		data.extract(0, data.length(), buffer, sizeof(buffer));
-		std::cout << "Received: " << buffer << std::endl;
-		std::cout.flush();
+
+		std::stringstream brecv;
+
+		brecv<< "Received: " << buffer;
+		debug(5, brecv.str());
 
 		if (core.get_parser().ProcessCommand(data)) {
 			if (!core.rawData) {
